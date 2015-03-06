@@ -2,22 +2,69 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.neolumin</groupId>
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
+    
+    <groupId>org.neolumin.webster</groupId>
     <artifactId>webster</artifactId>
     <version>0.9.0-SNAPSHOT</version>
 
-    <name>Minimalist Web Framework</name>
+    <name>Webster: Minimalist Web Framework</name>
+    <inceptionYear>2014</inceptionYear>
+    <description>
+        Minimalist web framework, that has an express.js like API.
+    </description>
 
-    <distributionManagement>
-        <repository>
-            <id>bits.neolumin.com.releases</id>
-            <url>file:///var/www/maven/releases/</url>
-        </repository>
-        <snapshotRepository>
-            <id>bits.neolumin.com.snapshots</id>
-            <url>file:///var/www/maven/snapshots/</url>
-        </snapshotRepository>
-    </distributionManagement>
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <url>scm:git:git@github.com:v5analytics/webster.git</url>
+        <connection>scm:git:git@github.com:v5analytics/webster.git</connection>
+        <developerConnection>scm:git:git@github.com:v5analytics/webster.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
+    <issueManagement>
+        <system>GitHub Issues</system>
+        <url>https://github.com/v5analytics/webster/issues</url>
+    </issueManagement>
+
+    <developers>
+        <developer>
+            <name>Jeff Kunkle</name>
+            <url>https://github.com/kunklejr</url>
+            <timezone>-5</timezone>
+            <email>jeff.kunkle@v5analytics.com</email>
+        </developer>
+        <developer>
+            <name>Joe Ferner</name>
+            <url>https://github.com/joeferner</url>
+            <timezone>-5</timezone>
+            <email>joe.ferner@v5analytics.com</email>
+        </developer>
+    </developers>
+
+    <properties>
+        <java.compiler.showWarnings>true</java.compiler.showWarnings>
+        <java.source.version>1.7</java.source.version>
+        <java.target.version>1.7</java.target.version>
+
+        <maven.plugin.scm.version>1.8.1</maven.plugin.scm.version>
+        <maven.plugin.compiler.version>3.1</maven.plugin.compiler.version>
+        <maven.plugin.source.version>2.2.1</maven.plugin.source.version>
+        <maven.plugin.javadoc.version>2.9.1</maven.plugin.javadoc.version>
+        <maven.plugin.release.version>2.5</maven.plugin.release.version>
+        <maven.plugin.gpg.version>1.4</maven.plugin.gpg.version>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -54,21 +101,30 @@
     </dependencies>
 
     <build>
-        <extensions>
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-file</artifactId>
-                <version>1.0</version>
-            </extension>
-        </extensions>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-scm-plugin</artifactId>
+                <version>${maven.plugin.scm.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.plugin.compiler.version}</version>
+                <configuration>
+                    <source>${java.source.version}</source>
+                    <target>${java.target.version}</target>
+                    <showWarnings>${java.compiler.showWarnings}</showWarnings>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>2.2.1</version>
+                <version>${maven.plugin.source.version}</version>
                 <executions>
                     <execution>
-                        <id>attach-sources</id>
+                        <id>source-jar</id>
+                        <phase>package</phase>
                         <goals>
                             <goal>jar</goal>
                         </goals>
@@ -78,16 +134,70 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9.1</version>
+                <version>${maven.plugin.javadoc.version}</version>
                 <executions>
                     <execution>
-                        <id>attach-javadocs</id>
+                        <id>javadocs-jar</id>
+                        <phase>package</phase>
                         <goals>
                             <goal>jar</goal>
                         </goals>
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>${maven.plugin.release.version}</version>
+                <configuration>
+                    <mavenExecutorId>forked-path</mavenExecutorId>
+                    <useReleaseProfile>false</useReleaseProfile>
+                    <arguments>-Psonatype-oss-release</arguments>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.scm</groupId>
+                        <artifactId>maven-scm-api</artifactId>
+                        <version>${maven.plugin.scm.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.maven.scm</groupId>
+                        <artifactId>maven-scm-provider-gitexe</artifactId>
+                        <version>${maven.plugin.scm.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>release-tasks</id>
+            <activation>
+                <!-- mvn release:perform sets this to true -->
+                <property>
+                    <name>performRelease</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>${maven.plugin.gpg.version}</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
