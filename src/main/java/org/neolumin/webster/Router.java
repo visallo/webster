@@ -8,10 +8,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Router {
     private static final Logger LOGGER = LoggerFactory.getLogger(Router.class);
@@ -31,6 +28,7 @@ public class Router {
     public Route addRoute(Route.Method method, String path, Handler... handlers) {
         List<Route> methodRoutes = routes.get(method);
         Route route = new Route(method, path, handlers);
+        removeExistingRoute(methodRoutes, method, path);
         methodRoutes.add(route);
         return route;
     }
@@ -105,5 +103,16 @@ public class Router {
 
     public Map<Route.Method, List<Route>> getRoutes() {
         return routes;
+    }
+
+    private static void removeExistingRoute(List<Route> routes, Route.Method method, String path) {
+        Iterator<Route> iterator = routes.iterator();
+        while (iterator.hasNext()) {
+            Route route = iterator.next();
+            if (route.getMethod().equals(method) && route.getPath().equals(path)) {
+                iterator.remove();
+                break;
+            }
+        }
     }
 }

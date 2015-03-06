@@ -116,6 +116,19 @@ public class RouterTest {
     }
 
     @Test
+    public void testRouteOverride() throws Exception {
+        Handler handlerOverride = mock(Handler.class);
+        router.addRoute(Route.Method.GET, path, handler);
+        router.addRoute(Route.Method.GET, path, handlerOverride);
+        when(request.getMethod()).thenReturn(Route.Method.GET.toString());
+        when(request.getRequestURI()).thenReturn(path);
+        when(request.getContextPath()).thenReturn("");
+        router.route(request, response);
+        verify(handler, never()).handle(any(HttpServletRequest.class), any(HttpServletResponse.class), any(HandlerChain.class));
+        verify(handlerOverride).handle(eq(request), eq(response), any(HandlerChain.class));
+    }
+
+    @Test
     public void testExceptionHandler() throws Exception {
         Class<? extends Exception> exClass = ArrayStoreException.class;
         router.addRoute(Route.Method.GET, path, exceptionThrowingHandler);
