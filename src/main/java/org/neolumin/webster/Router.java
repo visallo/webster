@@ -8,10 +8,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Router {
     private static final Logger LOGGER = LoggerFactory.getLogger(Router.class);
@@ -31,7 +28,14 @@ public class Router {
     public Route addRoute(Route.Method method, String path, Handler... handlers) {
         List<Route> methodRoutes = routes.get(method);
         Route route = new Route(method, path, handlers);
-        methodRoutes.add(route);
+        int existingRouteIndex = methodRoutes.indexOf(route);
+
+        if (existingRouteIndex > -1) {
+            methodRoutes.set(existingRouteIndex, route);
+        } else {
+            methodRoutes.add(route);
+        }
+        
         return route;
     }
 
