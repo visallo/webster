@@ -9,7 +9,7 @@
     
     <groupId>org.neolumin.webster</groupId>
     <artifactId>webster</artifactId>
-    <version>0.9.0</version>
+    <version>0.9.1-SNAPSHOT</version>
 
     <name>Webster: Minimalist Web Framework</name>
     <inceptionYear>2014</inceptionYear>
@@ -29,7 +29,7 @@
         <url>scm:git:git@github.com:v5analytics/webster.git</url>
         <connection>scm:git:git@github.com:v5analytics/webster.git</connection>
         <developerConnection>scm:git:git@github.com:v5analytics/webster.git</developerConnection>
-        <tag>webster-0.9.0</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <issueManagement>
