@@ -127,4 +127,18 @@ public class Route {
     public String getPath() {
         return path;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || !obj.getClass().isAssignableFrom(Route.class)) {
+            return false;
+        }
+        Route otherRoute = (Route)obj;
+        return this.getMethod().equals(otherRoute.getMethod()) && this.getPath().equals(otherRoute.getPath());
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getPath().hashCode() + 37 * this.getMethod().hashCode();
+    }
 }
