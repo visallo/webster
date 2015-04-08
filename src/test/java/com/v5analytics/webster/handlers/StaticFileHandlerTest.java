@@ -1,6 +1,6 @@
-package org.neolumin.webster.handlers;
+package com.v5analytics.webster.handlers;
 
-import org.neolumin.webster.HandlerChain;
+import com.v5analytics.webster.HandlerChain;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;

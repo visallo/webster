@@ -1,4 +1,4 @@
-package org.neolumin.webster;
+package com.v5analytics.webster;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

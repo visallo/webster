@@ -1,6 +1,6 @@
-package org.neolumin.webster;
+package com.v5analytics.webster;
 
-import org.neolumin.webster.utils.UrlUtils;
+import com.v5analytics.webster.utils.UrlUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;

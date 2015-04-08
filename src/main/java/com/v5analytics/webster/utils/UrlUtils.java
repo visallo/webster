@@ -1,4 +1,4 @@
-package org.neolumin.webster.utils;
+package com.v5analytics.webster.utils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;

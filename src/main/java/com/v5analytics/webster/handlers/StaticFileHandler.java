@@ -1,7 +1,7 @@
-package org.neolumin.webster.handlers;
+package com.v5analytics.webster.handlers;
 
-import org.neolumin.webster.Handler;
-import org.neolumin.webster.HandlerChain;
+import com.v5analytics.webster.Handler;
+import com.v5analytics.webster.HandlerChain;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;

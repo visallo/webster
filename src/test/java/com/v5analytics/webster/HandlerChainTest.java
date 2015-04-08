@@ -1,4 +1,4 @@
-package org.neolumin.webster;
+package com.v5analytics.webster;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -1,4 +1,4 @@
-package org.neolumin.webster;
+package com.v5analytics.webster;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
