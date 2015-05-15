@@ -5,7 +5,7 @@ Minimal web framework, implemented in Java, resembling [node.js](https://github.
 
 License
 -------
-Copyright 2015 V5 Analytics LLC
+Copyright 2015 V5 Analytics LLC<br>
 Copyright 2013 Altamira Technologies Corporation
 
 Licensed under the Apache License, Version 2.0 (the "License");
