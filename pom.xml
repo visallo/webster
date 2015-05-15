@@ -9,7 +9,7 @@
     
     <groupId>com.v5analytics.webster</groupId>
     <artifactId>webster</artifactId>
-    <version>0.10.1-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <name>Webster: Minimalist Web Framework</name>
     <inceptionYear>2014</inceptionYear>
@@ -29,7 +29,7 @@
         <url>scm:git:git@github.com:v5analytics/webster.git</url>
         <connection>scm:git:git@github.com:v5analytics/webster.git</connection>
         <developerConnection>scm:git:git@github.com:v5analytics/webster.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>webster-1.0.0</tag>
     </scm>
 
     <issueManagement>
