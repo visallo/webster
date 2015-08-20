@@ -1,7 +1,7 @@
 package com.v5analytics.webster.handlers;
 
-import com.v5analytics.webster.Handler;
 import com.v5analytics.webster.HandlerChain;
+import com.v5analytics.webster.RequestResponseHandler;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
-public class StaticFileHandler implements Handler {
+public class StaticFileHandler implements RequestResponseHandler {
     private final RequestDispatcher handler;
     private final String pathInfo;
 

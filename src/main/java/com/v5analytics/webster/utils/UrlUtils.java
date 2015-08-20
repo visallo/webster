@@ -1,5 +1,7 @@
 package com.v5analytics.webster.utils;
 
+import com.v5analytics.webster.WebsterException;
+
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -10,7 +12,7 @@ public class UrlUtils {
         try {
             return URLDecoder.decode(s, "utf-8");
         } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
+            throw new WebsterException(e);
         }
     }
 
@@ -18,7 +20,7 @@ public class UrlUtils {
         try {
             return URLEncoder.encode(s, "utf-8");
         } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
+            throw new WebsterException(e);
         }
     }
 

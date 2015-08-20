@@ -1,5 +1,6 @@
 package com.v5analytics.webster;
 
+import com.v5analytics.webster.parameterProviders.ParameterProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,11 +18,11 @@ public class App {
 
     public App(final ServletContext servletContext) {
         router = new Router(servletContext);
-        config = new HashMap<String, Object>();
+        config = new HashMap<>();
     }
 
     public void get(String path, Handler... handlers) {
-        router.addRoute(Route.Method.GET, path, handlers);
+        router.addRoute(Route.Method.GET, path, wrapNonRequestResponseHandlers(handlers));
     }
 
     public void get(String path, Class<? extends Handler>... classes) {
@@ -29,12 +30,12 @@ public class App {
             Handler[] handlers = instantiateHandlers(classes);
             get(path, handlers);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new WebsterException(e);
         }
     }
 
     public void post(String path, Handler... handlers) {
-        router.addRoute(Route.Method.POST, path, handlers);
+        router.addRoute(Route.Method.POST, path, wrapNonRequestResponseHandlers(handlers));
     }
 
     public void post(String path, Class<? extends Handler>... classes) {
@@ -42,12 +43,12 @@ public class App {
             Handler[] handlers = instantiateHandlers(classes);
             post(path, handlers);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new WebsterException(e);
         }
     }
 
     public void put(String path, Handler... handlers) {
-        router.addRoute(Route.Method.PUT, path, handlers);
+        router.addRoute(Route.Method.PUT, path, wrapNonRequestResponseHandlers(handlers));
     }
 
     public void put(String path, Class<? extends Handler>... classes) {
@@ -55,12 +56,12 @@ public class App {
             Handler[] handlers = instantiateHandlers(classes);
             put(path, handlers);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new WebsterException(e);
         }
     }
 
     public void delete(String path, Handler... handlers) {
-        router.addRoute(Route.Method.DELETE, path, handlers);
+        router.addRoute(Route.Method.DELETE, path, wrapNonRequestResponseHandlers(handlers));
     }
 
     public void delete(String path, Class<? extends Handler>... classes) {
@@ -68,12 +69,12 @@ public class App {
             Handler[] handlers = instantiateHandlers(classes);
             delete(path, handlers);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new WebsterException(e);
         }
     }
 
     public void onException(Class<? extends Exception> exceptionClass, Handler... handlers) {
-        router.addExceptionHandler(exceptionClass, handlers);
+        router.addExceptionHandler(exceptionClass, wrapNonRequestResponseHandlers(handlers));
     }
 
     public void onException(Class<? extends Exception> exceptionClass, Class<? extends Handler>... classes) {
@@ -81,7 +82,7 @@ public class App {
             Handler[] handlers = instantiateHandlers(classes);
             onException(exceptionClass, handlers);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new WebsterException(e);
         }
     }
 
@@ -141,5 +142,27 @@ public class App {
             handlers[i] = handlerClasses[i].newInstance();
         }
         return handlers;
+    }
+
+    private RequestResponseHandler[] wrapNonRequestResponseHandlers(Handler[] handlers) {
+        RequestResponseHandler[] results = new RequestResponseHandler[handlers.length];
+        for (int i = 0; i < handlers.length; i++) {
+            if (handlers[i] instanceof RequestResponseHandler) {
+                results[i] = (RequestResponseHandler) handlers[i];
+            } else if (handlers[i] instanceof ParameterizedHandler) {
+                results[i] = new RequestResponseHandlerParameterizedHandlerWrapper((ParameterizedHandler) handlers[i]);
+            } else {
+                throw new WebsterException("Unhandled handler type: " + handlers[i].getClass().getName());
+            }
+        }
+        return results;
+    }
+
+    public static void registeredParameterProviderClass(Class handledClass, Class<? extends ParameterProvider> parameterProviderClass) {
+        RequestResponseHandlerParameterizedHandlerWrapper.registeredParameterProviderClass(handledClass, parameterProviderClass);
+    }
+
+    public static void registerParameterValueConverter(Class clazz, DefaultParameterValueConverter.Converter converter) {
+        DefaultParameterValueConverter.registerValueConverter(clazz, converter);
     }
 }

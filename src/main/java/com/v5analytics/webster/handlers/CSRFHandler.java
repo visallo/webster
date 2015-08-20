@@ -1,7 +1,7 @@
 package com.v5analytics.webster.handlers;
 
-import com.v5analytics.webster.Handler;
 import com.v5analytics.webster.HandlerChain;
+import com.v5analytics.webster.RequestResponseHandler;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -9,7 +9,7 @@ import javax.servlet.http.HttpSession;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
-public class CSRFHandler implements Handler {
+public class CSRFHandler implements RequestResponseHandler {
     public static final String CSRF_TOKEN_ATTR = "webster.csrf.token";
 
     private final String tokenRequestParameterName;

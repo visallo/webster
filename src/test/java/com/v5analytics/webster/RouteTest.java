@@ -14,11 +14,11 @@ import static org.mockito.Mockito.*;
 @RunWith(JUnit4.class)
 public class RouteTest {
     private String path;
-    private Handler handler;
+    private RequestResponseHandler handler;
 
     @Before
     public void before() {
-        handler = mock(Handler.class);
+        handler = mock(RequestResponseHandler.class);
         path = "/test";
     }
 

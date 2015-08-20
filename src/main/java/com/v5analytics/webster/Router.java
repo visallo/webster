@@ -8,14 +8,17 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Router {
     private static final Logger LOGGER = LoggerFactory.getLogger(Router.class);
 
     private ServletContext servletContext;
     private Map<Route.Method, List<Route>> routes = new HashMap<Route.Method, List<Route>>();
-    Map<Class<? extends Exception>, Handler[]> exceptionHandlers = new HashMap<Class<? extends Exception>, Handler[]>();
+    Map<Class<? extends Exception>, RequestResponseHandler[]> exceptionHandlers = new HashMap<>();
 
     public Router(ServletContext servletContext) {
         this.servletContext = servletContext;
@@ -25,7 +28,7 @@ public class Router {
         routes.put(Route.Method.DELETE, new ArrayList<Route>());
     }
 
-    public Route addRoute(Route.Method method, String path, Handler... handlers) {
+    public Route addRoute(Route.Method method, String path, RequestResponseHandler... handlers) {
         List<Route> methodRoutes = routes.get(method);
         Route route = new Route(method, path, handlers);
         int existingRouteIndex = methodRoutes.indexOf(route);
@@ -35,11 +38,11 @@ public class Router {
         } else {
             methodRoutes.add(route);
         }
-        
+
         return route;
     }
 
-    public void addExceptionHandler(Class<? extends Exception> exceptionClass, Handler[] handlers) {
+    public void addExceptionHandler(Class<? extends Exception> exceptionClass, RequestResponseHandler[] handlers) {
         exceptionHandlers.put(exceptionClass, handlers);
     }
 
@@ -47,7 +50,7 @@ public class Router {
         try {
             routeWithExceptionHandling(request, response);
         } catch (Exception ex) {
-            Handler[] handlers = exceptionHandlers.get(ex.getClass());
+            RequestResponseHandler[] handlers = exceptionHandlers.get(ex.getClass());
             if (handlers != null && handlers.length > 0) {
                 LOGGER.error("Caught exception in route", ex);
                 dispatch(handlers, request, response);
@@ -87,12 +90,12 @@ public class Router {
             };
             rd.forward(wrapped, response);
         } else {
-            Handler[] handlers = route.getHandlers();
+            RequestResponseHandler[] handlers = route.getHandlers();
             dispatch(handlers, request, response);
         }
     }
 
-    private void dispatch(Handler[] handlers, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    private void dispatch(RequestResponseHandler[] handlers, HttpServletRequest request, HttpServletResponse response) throws Exception {
         HandlerChain chain = new HandlerChain(handlers);
         chain.next(request, response);
     }

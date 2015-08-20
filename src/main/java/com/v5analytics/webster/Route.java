@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 public class Route {
     public static final String MATCHED_ROUTE = "websterMatchedRoute";
 
-    public static enum Method {GET, POST, PUT, DELETE}
+    public enum Method {GET, POST, PUT, DELETE}
 
     private static final char[] REGEX_SPECIAL_CHARS = new char[]{
             '\\', '^', '$', '.', '|', '?', '*', '+', '(', ')', '[', ']', '{', '}'
@@ -21,11 +21,11 @@ public class Route {
 
     private Method method;
     private String path;
-    private Handler[] handlers;
-    private List<String> componentNames = new ArrayList<String>();
+    private RequestResponseHandler[] handlers;
+    private List<String> componentNames = new ArrayList<>();
     private Pattern routePathPattern;
 
-    public Route(Method method, String path, Handler... handlers) {
+    public Route(Method method, String path, RequestResponseHandler... handlers) {
         this.method = method;
         this.path = path;
         this.handlers = handlers;
@@ -116,7 +116,7 @@ public class Route {
         return true;
     }
 
-    public Handler[] getHandlers() {
+    public RequestResponseHandler[] getHandlers() {
         return handlers;
     }
 
@@ -133,7 +133,7 @@ public class Route {
         if (obj == null || !obj.getClass().isAssignableFrom(Route.class)) {
             return false;
         }
-        Route otherRoute = (Route)obj;
+        Route otherRoute = (Route) obj;
         return this.getMethod().equals(otherRoute.getMethod()) && this.getPath().equals(otherRoute.getPath());
     }
 

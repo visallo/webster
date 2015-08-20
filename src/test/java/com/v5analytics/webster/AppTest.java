@@ -18,7 +18,7 @@ import static org.mockito.Mockito.*;
 @RunWith(JUnit4.class)
 public class AppTest {
     private String path = "/foo";
-    private Handler handler;
+    private RequestResponseHandler handler;
     private HttpServletRequest request;
     private HttpServletResponse response;
     private RequestDispatcher requestDispatcher;
@@ -27,7 +27,14 @@ public class AppTest {
 
     @Before
     public void before() {
-        handler = mock(Handler.class);
+        App.registeredParameterProviderClass(TestUser.class, TestUserParameterProvider.class);
+        App.registerParameterValueConverter(TestParameterObject.class, new DefaultParameterValueConverter.Converter<TestParameterObject>() {
+            @Override
+            public TestParameterObject convert(Class parameterType, String parameterName, String value) {
+                return TestParameterObject.parse(value);
+            }
+        });
+        handler = mock(RequestResponseHandler.class);
         request = mock(HttpServletRequest.class);
         response = mock(HttpServletResponse.class);
         requestDispatcher = mock(RequestDispatcher.class);
@@ -46,6 +53,42 @@ public class AppTest {
     }
 
     @Test
+    public void testParameterizedHandlerClass() throws Exception {
+        app.get(path, TestParameterizedHandler.class);
+        when(request.getMethod()).thenReturn("GET");
+        when(request.getRequestURI()).thenReturn(path);
+        when(request.getContextPath()).thenReturn("");
+        when(request.getParameter("requiredString")).thenReturn("requiredValue");
+        when(request.getParameter("requiredInt")).thenReturn("1");
+        when(request.getParameter("testParameterObject")).thenReturn("testParameterObjectValue");
+        app.handle(request, response);
+        verify(request).setAttribute("handled", "true");
+    }
+
+    @Test
+    public void testParameterizedHandlerInstance() throws Exception {
+        ParameterizedHandler parameterizedHandler = new TestParameterizedHandler();
+        app.get(path, parameterizedHandler);
+        when(request.getMethod()).thenReturn("GET");
+        when(request.getRequestURI()).thenReturn(path);
+        when(request.getContextPath()).thenReturn("");
+        when(request.getParameter("requiredString")).thenReturn("requiredValue");
+        when(request.getParameter("requiredInt")).thenReturn("1");
+        when(request.getParameter("userId")).thenReturn("userA");
+        when(request.getParameter("testParameterObject")).thenReturn("testParameterObjectValue");
+        app.handle(request, response);
+        verify(request).setAttribute("handled", "true");
+        verify(request).setAttribute("requiredInt", 1);
+        verify(request).setAttribute("optionalIntWithDefault", 42);
+        verify(request).setAttribute("optionalInteger", null);
+        verify(request).setAttribute("optionalIntegerWithDefault", 42);
+        verify(request).setAttribute("requiredString", "requiredValue");
+        verify(request).setAttribute("optionalStringWithDefault", "default value");
+        verify(request).setAttribute("testParameterObject", new TestParameterObject("testParameterObjectValue"));
+        verify(request).setAttribute("user", new TestUser("userA"));
+    }
+
+    @Test
     public void testRouteMiss() throws Exception {
         app.get(path, handler);
         when(request.getMethod()).thenReturn("POST");
@@ -58,14 +101,14 @@ public class AppTest {
 
     @Test
     public void testCaughtExceptionInHandler() throws Exception {
-        handler = new Handler() {
+        handler = new RequestResponseHandler() {
             @Override
             public void handle(HttpServletRequest request, HttpServletResponse response, HandlerChain chain) throws Exception {
                 throw new ArrayStoreException("boom");
             }
         };
         app.post(path, handler);
-        app.onException(ArrayStoreException.class, new TestHandler());
+        app.onException(ArrayStoreException.class, new TestRequestResponseHandler());
         when(request.getMethod()).thenReturn("POST");
         when(request.getRequestURI()).thenReturn(path);
         when(request.getContextPath()).thenReturn("");
@@ -74,7 +117,7 @@ public class AppTest {
 
     @Test(expected = Exception.class)
     public void testUnhandledExceptionInHandler() throws Exception {
-        handler = new Handler() {
+        handler = new RequestResponseHandler() {
             @Override
             public void handle(HttpServletRequest request, HttpServletResponse response, HandlerChain chain) throws Exception {
                 throw new Exception("boom");
@@ -89,7 +132,7 @@ public class AppTest {
 
     @Test
     public void testRouteSetupByClass() throws Exception {
-        app.delete(path, TestHandler.class);
+        app.delete(path, TestRequestResponseHandler.class);
         when(request.getMethod()).thenReturn("DELETE");
         when(request.getRequestURI()).thenReturn(path);
         when(request.getContextPath()).thenReturn("");
@@ -99,7 +142,7 @@ public class AppTest {
 
     @Test
     public void testMultipleHandlersForRoute() throws Exception {
-        Handler h2 = new TestHandler();
+        Handler h2 = new TestRequestResponseHandler();
         app.get(path, h2, handler);
         when(request.getMethod()).thenReturn("GET");
         when(request.getRequestURI()).thenReturn(path);
@@ -110,7 +153,7 @@ public class AppTest {
 
     @Test
     public void testMulitpleHandlersForRouteSetupByClass() throws Exception {
-        app.delete(path, TestHandler.class, TestHandler.class);
+        app.delete(path, TestRequestResponseHandler.class, TestRequestResponseHandler.class);
         when(request.getMethod()).thenReturn("DELETE");
         when(request.getRequestURI()).thenReturn(path);
         when(request.getContextPath()).thenReturn("");

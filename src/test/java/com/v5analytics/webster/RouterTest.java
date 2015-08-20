@@ -15,8 +15,8 @@ import static org.mockito.Mockito.*;
 @RunWith(JUnit4.class)
 public class RouterTest {
     private Router router;
-    private Handler handler;
-    private Handler exceptionThrowingHandler;
+    private RequestResponseHandler handler;
+    private RequestResponseHandler exceptionThrowingHandler;
     private HttpServletRequest request;
     private HttpServletResponse response;
     private RequestDispatcher requestDispatcher;
@@ -27,8 +27,8 @@ public class RouterTest {
     public void before() {
         servletContext = mock(ServletContext.class);
         router = new Router(servletContext);
-        handler = mock(Handler.class);
-        exceptionThrowingHandler = mock(Handler.class);
+        handler = mock(RequestResponseHandler.class);
+        exceptionThrowingHandler = mock(RequestResponseHandler.class);
         request = mock(HttpServletRequest.class);
         response = mock(HttpServletResponse.class);
         requestDispatcher = mock(RequestDispatcher.class);
@@ -106,7 +106,7 @@ public class RouterTest {
 
     @Test
     public void testMultipleRouteHandlers() throws Exception {
-        Handler h2 = new TestHandler();
+        RequestResponseHandler h2 = new TestRequestResponseHandler();
         router.addRoute(Route.Method.GET, path, h2, handler);
         when(request.getMethod()).thenReturn(Route.Method.GET.toString());
         when(request.getRequestURI()).thenReturn(path);
@@ -117,7 +117,7 @@ public class RouterTest {
 
     @Test
     public void testRouteOverride() throws Exception {
-        Handler handlerOverride = mock(Handler.class);
+        RequestResponseHandler handlerOverride = mock(RequestResponseHandler.class);
         router.addRoute(Route.Method.GET, path, handler);
         router.addRoute(Route.Method.GET, path, handlerOverride);
         when(request.getMethod()).thenReturn(Route.Method.GET.toString());
@@ -132,7 +132,7 @@ public class RouterTest {
     public void testExceptionHandler() throws Exception {
         Class<? extends Exception> exClass = ArrayStoreException.class;
         router.addRoute(Route.Method.GET, path, exceptionThrowingHandler);
-        router.addExceptionHandler(exClass, new Handler[]{handler});
+        router.addExceptionHandler(exClass, new RequestResponseHandler[]{handler});
 
         when(request.getMethod()).thenReturn(Route.Method.GET.toString());
         when(request.getRequestURI()).thenReturn(path);
@@ -146,7 +146,7 @@ public class RouterTest {
     public void testMissingExceptionHandler() throws Exception {
         Class<? extends Exception> exClass = ArrayStoreException.class;
         router.addRoute(Route.Method.GET, path, exceptionThrowingHandler);
-        router.addExceptionHandler(RuntimeException.class, new Handler[]{handler});
+        router.addExceptionHandler(RuntimeException.class, new RequestResponseHandler[]{handler});
 
         when(request.getMethod()).thenReturn(Route.Method.GET.toString());
         when(request.getRequestURI()).thenReturn(path);
@@ -159,7 +159,7 @@ public class RouterTest {
     public void testExceptionInExceptionHandler() throws Exception {
         Class<? extends Exception> exClass = ArrayStoreException.class;
         router.addRoute(Route.Method.GET, path, exceptionThrowingHandler);
-        router.addExceptionHandler(exClass, new Handler[] { handler });
+        router.addExceptionHandler(exClass, new RequestResponseHandler[]{handler});
 
         when(request.getMethod()).thenReturn(Route.Method.GET.toString());
         when(request.getRequestURI()).thenReturn(path);

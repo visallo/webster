@@ -1,7 +1,7 @@
 package com.v5analytics.webster.handlers;
 
-import com.v5analytics.webster.Handler;
 import com.v5analytics.webster.HandlerChain;
+import com.v5analytics.webster.RequestResponseHandler;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -12,7 +12,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AppendableStaticResourceHandler implements Handler {
+public class AppendableStaticResourceHandler implements RequestResponseHandler {
     private final String contentType;
     private final List<String> resourcePaths = new ArrayList<String>();
 
@@ -29,7 +29,7 @@ public class AppendableStaticResourceHandler implements Handler {
 
         response.setContentType(contentType);
         ServletOutputStream out = response.getOutputStream();
-        for(String resourcePath : resourcePaths) {
+        for (String resourcePath : resourcePaths) {
             InputStream in = this.getClass().getResourceAsStream(resourcePath);
             copy(in, out);
             out.write("\n".getBytes());
