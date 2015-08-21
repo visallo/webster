@@ -137,6 +137,24 @@
       document.getElementById(parameterTargetId).innerHTML = parameterHtml;
     };
 
+    var addHeaderParameter = function (name, value) {
+      var node = createNodeFromHtml(createParameterHtml('request-header', name, value));
+      document.getElementById('request-headers').appendChild(node);
+      ensureBlankParameter('request-headers');
+    };
+
+    var addUrlParameter = function (name, value) {
+      var node = createNodeFromHtml(createParameterHtml('request-url-parameter', name, value));
+      document.getElementById('request-url-parameters').appendChild(node);
+      ensureBlankParameter('request-url-parameters');
+    };
+
+    var addFormParameter = function (name, value) {
+      var node = createNodeFromHtml(createParameterHtml('request-form-data', name, value));
+      document.getElementById('request-form-datas').appendChild(node);
+      ensureBlankParameter('request-form-datas');
+    };
+
     var removeItem = function (e) {
       var caller = e.target || e.srcElement;
       var row = caller.parentNode;
