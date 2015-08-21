@@ -15,28 +15,37 @@
     #sidebar {
       float: left;
       height: 100%;
-      overflow: hidden;
+      overflow: auto;
       position: fixed;
-      width: 300px;
+      width: 400px;
       background: #e8e8e8;
     }
 
     #sidebar h1 {
+      margin: 0;
     }
 
     #route {
-      margin-left: 310px;
-      margin-top: 10px;
+      margin-left: 410px;
+      padding-top: 10px;
       width: 70%;
     }
 
     #routes ul {
-      padding-left: 10px;
+      padding-left: 0px;
     }
 
     #routes li {
       list-style-type: none;
-      padding-bottom: 5px;
+      padding: 3px 3px 3px 10px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: pointer;
+    }
+
+    #routes li:hover {
+      background-color: #d3d3d3;
     }
 
     .method {

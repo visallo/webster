@@ -10,10 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class RouteRunner implements ParameterizedHandler {
     public static final String ROUTE_RUNNER_HTML = "routeRunner.html";
@@ -25,9 +22,9 @@ public class RouteRunner implements ParameterizedHandler {
 
     protected String loadRouteRunnerHtml() {
         try {
-            InputStream routeRunnerHtmlStream = getClass().getResourceAsStream(ROUTE_RUNNER_HTML);
+            InputStream routeRunnerHtmlStream = RouteRunner.class.getResourceAsStream(ROUTE_RUNNER_HTML);
             if (routeRunnerHtmlStream == null) {
-                throw new WebsterException("Could not find " + getClass().getResource(ROUTE_RUNNER_HTML));
+                throw new WebsterException("Could not find " + RouteRunner.class.getResource(ROUTE_RUNNER_HTML));
             }
             ByteArrayOutputStream temp = new ByteArrayOutputStream();
             int read;
@@ -113,18 +110,37 @@ public class RouteRunner implements ParameterizedHandler {
     protected String getRoutesHtml(Router router) {
         StringBuilder result = new StringBuilder();
         result.append("<ul>\n");
-        for (Map.Entry<Route.Method, List<Route>> routeEntry : router.getRoutes().entrySet()) {
-            for (Route route : routeEntry.getValue()) {
-                result
-                        .append("<li onclick=\"javascript:loadRoute('").append(routeEntry.getKey().name()).append("', '").append(route.getPath()).append("')\">\n")
-                        .append("<div class='method method-").append(routeEntry.getKey().name()).append("'>").append(routeEntry.getKey().name()).append("</div>")
-                        .append(" ")
-                        .append("<div class='path'>").append(route.getPath()).append("</div>")
-                        .append("</li>\n");
-            }
+        List<Route> routes = getSortedRoutes(router.getRoutes());
+        for (Route route : routes) {
+            result
+                    .append("<li title=\"").append(route.getPath()).append("\" onclick=\"javascript:loadRoute('").append(route.getMethod().name()).append("', '").append(route.getPath()).append("')\">\n")
+                    .append("<div class='method method-").append(route.getMethod().name()).append("'>").append(route.getMethod().name()).append("</div>")
+                    .append(" ")
+                    .append("<div class='path'>").append(route.getPath()).append("</div>")
+                    .append("</li>\n");
         }
         result.append("</ul>\n");
         return result.toString();
+    }
+
+    private List<Route> getSortedRoutes(Map<Route.Method, List<Route>> routes) {
+        List<Route> results = new ArrayList<>();
+        for (Map.Entry<Route.Method, List<Route>> routeEntry : routes.entrySet()) {
+            for (Route route : routeEntry.getValue()) {
+                results.add(route);
+            }
+        }
+        Collections.sort(results, new Comparator<Route>() {
+            @Override
+            public int compare(Route route1, Route route2) {
+                int r = route1.getPath().compareTo(route2.getPath());
+                if (r != 0) {
+                    return r;
+                }
+                return route1.getMethod().name().compareTo(route2.getMethod().name());
+            }
+        });
+        return results;
     }
 
     private String getRouteJson(Route route) {
