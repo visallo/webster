@@ -109,7 +109,6 @@ public class RouteRunner implements ParameterizedHandler {
 
     protected String getRoutesHtml(Router router) {
         StringBuilder result = new StringBuilder();
-        result.append("<ul>\n");
         List<Route> routes = getSortedRoutes(router.getRoutes());
         for (Route route : routes) {
             result
@@ -119,7 +118,6 @@ public class RouteRunner implements ParameterizedHandler {
                     .append("<div class='path'>").append(route.getPath()).append("</div>")
                     .append("</li>\n");
         }
-        result.append("</ul>\n");
         return result.toString();
     }
 

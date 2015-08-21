@@ -31,7 +31,7 @@
       width: 70%;
     }
 
-    #routes ul {
+    #routes {
       padding-left: 0px;
     }
 
@@ -243,6 +243,27 @@
       return results;
     };
 
+    var filterRoutes = function () {
+      var filter = document.getElementById('routes-filter').value.toLowerCase();
+      var routes = document.getElementById('routes');
+      for (var i = 0; i < routes.childNodes.length; i++) {
+        var child = routes.childNodes[i];
+        if (child instanceof Text) {
+          continue;
+        }
+        var show = filter.length == 0;
+        if (child.innerText.toLowerCase().indexOf(filter) >= 0) {
+          show = true;
+        }
+        var style = child.getAttribute("style") || '';
+        style = style.replace('display:none;', '');
+        if (!show) {
+          style += 'display:none;';
+        }
+        child.setAttribute("style", style);
+      }
+    };
+
     ${additionalJavascript}
   </script>
 </head>
@@ -251,9 +272,11 @@
   <div id="sidebar">
     <h1>${pageTitle}</h1>
 
-    <div id="routes">
+    <input id="routes-filter" onkeyup="filterRoutes();">
+
+    <ul id="routes">
       ${routes}
-    </div>
+    </ul>
   </div>
   <div id="route">
     <form>
