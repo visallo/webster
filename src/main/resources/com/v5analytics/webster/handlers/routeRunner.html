@@ -135,6 +135,10 @@
       background-color: #0044cc;
     }
 
+    .parameter {
+      margin-top: 3px;
+    }
+
     .parameter input {
       vertical-align: top;
     }
@@ -180,19 +184,19 @@
     var addHeaderParameter = function (name, value) {
       var node = createNodeFromHtml(createParameterHtml('request-header', name, value));
       document.getElementById('request-headers').appendChild(node);
-      ensureBlankParameter('request-headers');
+      ensureBlankParameter('request-headers', true);
     };
 
     var addUrlParameter = function (name, value) {
       var node = createNodeFromHtml(createParameterHtml('request-url-parameter', name, value));
       document.getElementById('request-url-parameters').appendChild(node);
-      ensureBlankParameter('request-url-parameters');
+      ensureBlankParameter('request-url-parameters', true);
     };
 
     var addFormParameter = function (name, value) {
       var node = createNodeFromHtml(createParameterHtml('request-form-data', name, value));
       document.getElementById('request-form-datas').appendChild(node);
-      ensureBlankParameter('request-form-datas');
+      ensureBlankParameter('request-form-datas', true);
     };
 
     var removeItem = function (e) {
@@ -208,19 +212,23 @@
       ensureBlankParameter(caller.parentNode.parentNode.id);
     };
 
-    var ensureBlankParameter = function (id) {
+    var ensureBlankParameter = function (id, removeBlanks) {
+      var elem = document.getElementById(id);
       var parameters = getRequestParameters(id, true);
       var hasBlank = false;
-      parameters.forEach(function (p) {
-        if (!p.name) {
+      for (var i = parameters.length - 1; i >= 0; i--) {
+        var p = parameters[i];
+        if (removeBlanks && !p.name && !p.value) {
+          elem.removeChild(elem.childNodes[i]);
+        } else if (!p.name) {
           hasBlank = true;
         }
-      });
+      }
       if (!hasBlank) {
         var className = id.substr(0, id.length - 1);
         var blankHtml = createParameterHtml(className);
         var childNode = createNodeFromHtml(blankHtml);
-        document.getElementById(id).appendChild(childNode);
+        elem.appendChild(childNode);
       }
     };
 
