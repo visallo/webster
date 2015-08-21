@@ -27,7 +27,7 @@ public class AppTest {
 
     @Before
     public void before() {
-        App.registeredParameterProviderClass(TestUser.class, TestUserParameterProvider.class);
+        App.registeredParameterProviderFactory(new TestUserParameterProviderFactory());
         App.registerParameterValueConverter(TestParameterObject.class, new DefaultParameterValueConverter.Converter<TestParameterObject>() {
             @Override
             public TestParameterObject convert(Class parameterType, String parameterName, String value) {

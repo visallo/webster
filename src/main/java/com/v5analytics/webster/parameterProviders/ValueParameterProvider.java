@@ -4,7 +4,7 @@ import com.v5analytics.webster.ParameterValueConverter;
 
 import javax.servlet.http.HttpServletRequest;
 
-public abstract class ValueParameterProvider extends ParameterProvider {
+public abstract class ValueParameterProvider<T> extends ParameterProvider<T> {
     private final Class<?> parameterType;
     private final String parameterName;
     private final ParameterValueConverter parameterValueConverter;
@@ -13,10 +13,6 @@ public abstract class ValueParameterProvider extends ParameterProvider {
         this.parameterType = parameterType;
         this.parameterName = parameterName;
         this.parameterValueConverter = parameterValueConverter;
-    }
-
-    public String getParameterName() {
-        return parameterName;
     }
 
     protected String getParameterOrAttribute(final HttpServletRequest request) {
@@ -33,8 +29,12 @@ public abstract class ValueParameterProvider extends ParameterProvider {
         return paramValue;
     }
 
-    protected Object toParameterType(String value) {
-        return parameterValueConverter.toValue(parameterType, parameterName, value);
+    public String getParameterName() {
+        return parameterName;
+    }
+
+    protected T toParameterType(String value) {
+        return (T) parameterValueConverter.toValue(parameterType, parameterName, value);
     }
 
     public Class<?> getParameterType() {

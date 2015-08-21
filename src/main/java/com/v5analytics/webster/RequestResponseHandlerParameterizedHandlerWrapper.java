@@ -1,25 +1,30 @@
 package com.v5analytics.webster;
 
 import com.v5analytics.webster.annotations.Handle;
-import com.v5analytics.webster.annotations.Optional;
-import com.v5analytics.webster.annotations.Required;
 import com.v5analytics.webster.parameterProviders.*;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RequestResponseHandlerParameterizedHandlerWrapper implements RequestResponseHandler {
-    private static final Map<Class, ParameterValueConverter> parameterValueConverters = new HashMap<>();
-    private static final Map<Class, Class<? extends ParameterProvider>> registeredParameterProviderClasses = new HashMap<>();
+    private static final List<ParameterProviderFactory> registeredParameterProviderFactories = new ArrayList<>();
     private final ParameterizedHandler handler;
     private final Method handleMethod;
     private final ParameterProvider[] parameterProviders;
+
+    static {
+        registeredParameterProviderFactories.add(new AppParameterProviderFactory());
+        registeredParameterProviderFactories.add(new HandlerChainParameterProviderFactory());
+        registeredParameterProviderFactories.add(new OptionalParameterProviderFactory());
+        registeredParameterProviderFactories.add(new RequiredParameterProviderFactory());
+        registeredParameterProviderFactories.add(new RouterParameterProviderFactory());
+        registeredParameterProviderFactories.add(new ServletRequestParameterProviderFactory());
+        registeredParameterProviderFactories.add(new ServletResponseParameterProviderFactory());
+    }
 
     public RequestResponseHandlerParameterizedHandlerWrapper(ParameterizedHandler handler) {
         this.handler = handler;
@@ -30,8 +35,8 @@ public class RequestResponseHandlerParameterizedHandlerWrapper implements Reques
         parameterProviders = createParameterProviders(this.handleMethod);
     }
 
-    public static <T> void registeredParameterProviderClass(Class<T> handledClass, Class<? extends ParameterProvider<T>> parameterProviderClass) {
-        registeredParameterProviderClasses.put(handledClass, parameterProviderClass);
+    public static <T> void registeredParameterProviderFactory(ParameterProviderFactory<T> parameterProviderFactory) {
+        registeredParameterProviderFactories.add(parameterProviderFactory);
     }
 
     private static ParameterProvider[] createParameterProviders(Method handleMethod) {
@@ -41,72 +46,24 @@ public class RequestResponseHandlerParameterizedHandlerWrapper implements Reques
         for (int i = 0; i < results.length; i++) {
             Class<?> parameterType = parameterTypes[i];
             Annotation[] parameterAnnotations = allParameterAnnotations[i];
-            ParameterProvider parameterProvider = createParameterProvider(handleMethod, parameterType, parameterAnnotations);
-            results[i] = parameterProvider;
+            results[i] = createParameterProvider(handleMethod, parameterType, parameterAnnotations);
         }
         return results;
     }
 
+    @SuppressWarnings("unchecked")
     private static ParameterProvider createParameterProvider(Method handleMethod, Class<?> parameterType, Annotation[] parameterAnnotations) {
-        ParameterProvider parameterProvider;
-        Optional optionalAnnotation = getOptionalAnnotation(parameterAnnotations);
-        Required requiredAnnotation = getRequiredAnnotation(parameterAnnotations);
-        if (ServletRequest.class.isAssignableFrom(parameterType)) {
-            parameterProvider = new ServletRequestParameterProvider();
-        } else if (ServletResponse.class.isAssignableFrom(parameterType)) {
-            parameterProvider = new ServletResponseParameterProvider();
-        } else if (HandlerChain.class.isAssignableFrom(parameterType)) {
-            parameterProvider = new HandlerChainParameterProvider();
-        } else if (App.class.isAssignableFrom(parameterType)) {
-            parameterProvider = new AppParameterProvider();
-        } else if (Router.class.isAssignableFrom(parameterType)) {
-            parameterProvider = new RouterParameterProvider();
-        } else if (optionalAnnotation != null) {
-            parameterProvider = new OptionalParameterProvider(parameterType, optionalAnnotation, createParameterValueConverter(optionalAnnotation.parameterValueConverter()));
-        } else if (requiredAnnotation != null) {
-            parameterProvider = new RequiredParameterProvider(parameterType, requiredAnnotation, createParameterValueConverter(requiredAnnotation.parameterValueConverter()));
-        } else if (registeredParameterProviderClasses.containsKey(parameterType)) {
-            Class<? extends ParameterProvider> parameterProviderClass = registeredParameterProviderClasses.get(parameterType);
-            try {
-                parameterProvider = parameterProviderClass.newInstance();
-            } catch (Exception e) {
-                throw new WebsterException("Could not create parameter provider from class " + parameterProviderClass.getName(), e);
+        ParameterProvider parameterProvider = null;
+        for (ParameterProviderFactory registeredParameterProviderFactory : registeredParameterProviderFactories) {
+            if (registeredParameterProviderFactory.isHandled(handleMethod, parameterType, parameterAnnotations)) {
+                parameterProvider = registeredParameterProviderFactory.createParameterProvider(handleMethod, parameterType, parameterAnnotations);
+                break;
             }
-        } else {
-            throw new WebsterException("Unhandled parameter " + parameterType.getName() + " for method " + handleMethod.getName());
+        }
+        if (parameterProvider == null) {
+            throw new WebsterException("Unhandled parameter " + parameterType.getName() + " for method " + handleMethod.getName() + " in class " + handleMethod.getDeclaringClass().getName());
         }
         return parameterProvider;
-    }
-
-    private static ParameterValueConverter createParameterValueConverter(Class<? extends ParameterValueConverter> parameterValueConverterClass) {
-        ParameterValueConverter parameterValueConverter = parameterValueConverters.get(parameterValueConverterClass);
-        if (parameterValueConverter == null) {
-            try {
-                parameterValueConverter = parameterValueConverterClass.newInstance();
-            } catch (Exception e) {
-                throw new WebsterException("Cannot create value converter: " + parameterValueConverterClass.getName(), e);
-            }
-            parameterValueConverters.put(parameterValueConverterClass, parameterValueConverter);
-        }
-        return parameterValueConverter;
-    }
-
-    private static Optional getOptionalAnnotation(Annotation[] annotations) {
-        for (Annotation annotation : annotations) {
-            if (annotation instanceof Optional) {
-                return (Optional) annotation;
-            }
-        }
-        return null;
-    }
-
-    private static Required getRequiredAnnotation(Annotation[] annotations) {
-        for (Annotation annotation : annotations) {
-            if (annotation instanceof Required) {
-                return (Required) annotation;
-            }
-        }
-        return null;
     }
 
     private static Method findMethodWithHandleAnnotation(ParameterizedHandler handler) {
@@ -125,7 +82,11 @@ public class RequestResponseHandlerParameterizedHandlerWrapper implements Reques
         for (int i = 0; i < this.parameterProviders.length; i++) {
             args[i] = this.parameterProviders[i].getParameter(request, response, chain);
         }
-        this.handleMethod.invoke(this.handler, args);
+        try {
+            this.handleMethod.invoke(this.handler, args);
+        } catch (IllegalArgumentException ex) {
+            throw new WebsterException("Could not invoke " + this.handleMethod, ex);
+        }
     }
 
     public ParameterizedHandler getHandler() {

@@ -1,6 +1,6 @@
 package com.v5analytics.webster;
 
-import com.v5analytics.webster.parameterProviders.ParameterProvider;
+import com.v5analytics.webster.parameterProviders.ParameterProviderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -158,8 +158,8 @@ public class App {
         return results;
     }
 
-    public static <T> void registeredParameterProviderClass(Class<T> handledClass, Class<? extends ParameterProvider<T>> parameterProviderClass) {
-        RequestResponseHandlerParameterizedHandlerWrapper.registeredParameterProviderClass(handledClass, parameterProviderClass);
+    public static <T> void registeredParameterProviderFactory(ParameterProviderFactory<T> parameterProviderFactory) {
+        RequestResponseHandlerParameterizedHandlerWrapper.registeredParameterProviderFactory(parameterProviderFactory);
     }
 
     public static <T> void registerParameterValueConverter(Class<T> clazz, DefaultParameterValueConverter.Converter<T> converter) {
