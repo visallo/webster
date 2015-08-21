@@ -42,7 +42,7 @@ public class RouteRunner implements ParameterizedHandler {
         }
     }
 
-    private String getAdditionalJavascript() {
+    protected String getAdditionalJavascript() {
         return "";
     }
 
