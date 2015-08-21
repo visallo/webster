@@ -8,6 +8,29 @@
       font-size: 13px;
     }
 
+    hr {
+      border-style: solid;
+    }
+
+    input {
+      margin-left: 3px;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+      border-bottom: 1px solid #b8b8b8;
+      outline: none;
+    }
+
+    input:focus {
+      border-bottom: 1px solid #707070;
+    }
+
+    select {
+      background-color: #ffffff;
+      border-radius: 2px;
+      padding: 3px;
+    }
+
     #wrap {
       margin: 0 auto;
     }
@@ -19,6 +42,15 @@
       position: fixed;
       width: 400px;
       background: #e8e8e8;
+    }
+
+    #sidebar input {
+      background: #e8e8e8;
+      border-bottom: 1px solid #858585;
+    }
+
+    #sidebar input:focus {
+      border-bottom: 1px solid #393939;
     }
 
     #sidebar h1 {
@@ -46,6 +78,14 @@
 
     #routes li:hover {
       background-color: #d3d3d3;
+    }
+
+    #request-path {
+      width: 500px;
+    }
+
+    .value {
+      width: 400px;
     }
 
     .method {
@@ -193,7 +233,7 @@
     var createParameterHtml = function (className, name, value) {
       name = name || '';
       value = value || '';
-      return '<div class="parameter ' + className + '"><input class="name" onkeyup="onParameterNameChange(event);" value="' + name + '"><input class="value" value="' + value + '"><img class="remove" onclick="removeItem(event); return false;" src="' + REMOVE_IMAGE_DATA + '"></img></div>';
+      return '<div class="parameter ' + className + '"><input class="name" placeholder="Name" onkeyup="onParameterNameChange(event);" value="' + name + '"><input class="value" placeholder="Value" value="' + value + '"><img class="remove" onclick="removeItem(event); return false;" src="' + REMOVE_IMAGE_DATA + '"></img></div>';
     };
 
     var sendRequest = function () {
@@ -290,7 +330,7 @@
   <div id="sidebar">
     <h1>${pageTitle}</h1>
 
-    <input id="routes-filter" onkeyup="filterRoutes();">
+    <input id="routes-filter" onkeyup="filterRoutes();" placeholder="Filter Routes">
 
     <ul id="routes">
       ${routes}
@@ -299,7 +339,7 @@
   <div id="route">
     <form>
       <div id="request-url">
-        <input id="request-path">
+        <input id="request-path" placeholder="URL">
         <select id="request-method">
           <option value="GET" selected="">GET</option>
           <option value="POST">POST</option>
