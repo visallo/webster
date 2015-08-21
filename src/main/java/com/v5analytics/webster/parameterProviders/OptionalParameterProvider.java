@@ -12,15 +12,26 @@ public class OptionalParameterProvider extends ValueParameterProvider {
 
     public OptionalParameterProvider(Class<?> parameterType, Optional optionalAnnotation, ParameterValueConverter parameterValueConverter) {
         super(parameterType, optionalAnnotation.name(), parameterValueConverter);
-        defaultValue = optionalAnnotation.defaultValue();
+        defaultValue = getDefaultValueFromAnnotation(optionalAnnotation);
+    }
+
+    private String getDefaultValueFromAnnotation(Optional optionalAnnotation) {
+        if (optionalAnnotation.defaultValue().equals(Optional.NOT_SET)) {
+            return null;
+        }
+        return optionalAnnotation.defaultValue();
     }
 
     @Override
     public Object getParameter(HttpServletRequest request, HttpServletResponse response, HandlerChain chain) {
         String value = getParameterOrAttribute(request);
-        if (value == null && !defaultValue.equals(Optional.NOT_SET)) {
+        if (value == null) {
             value = defaultValue;
         }
         return toParameterType(value);
+    }
+
+    public String getDefaultValue() {
+        return defaultValue;
     }
 }

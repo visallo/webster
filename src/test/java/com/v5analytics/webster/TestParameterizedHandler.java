@@ -13,6 +13,8 @@ public class TestParameterizedHandler implements ParameterizedHandler {
             HttpServletRequest request,
             HttpServletResponse response,
             HandlerChain chain,
+            App app,
+            Router router,
             @Required(name = "requiredInt") int requiredInt,
             @Optional(name = "optionalIntWithDefault", defaultValue = "42") int optionalIntWithDefault,
             @Optional(name = "optionalInteger") Integer optionalInteger,

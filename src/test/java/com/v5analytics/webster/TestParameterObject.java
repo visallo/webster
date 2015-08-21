@@ -26,4 +26,11 @@ public class TestParameterObject {
     public int hashCode() {
         return value.hashCode();
     }
+
+    @Override
+    public String toString() {
+        return "TestParameterObject{" +
+                "value='" + value + '\'' +
+                '}';
+    }
 }

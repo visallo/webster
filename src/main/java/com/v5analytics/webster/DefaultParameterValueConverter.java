@@ -45,6 +45,9 @@ public class DefaultParameterValueConverter implements ParameterValueConverter {
     public static class IntegerConverter implements Converter {
         @Override
         public Object convert(Class parameterType, String parameterName, String value) {
+            if (value == null || value.trim().length() == 0) {
+                return null;
+            }
             return Integer.parseInt(value);
         }
     }
@@ -52,6 +55,9 @@ public class DefaultParameterValueConverter implements ParameterValueConverter {
     public static class LongConverter implements Converter {
         @Override
         public Object convert(Class parameterType, String parameterName, String value) {
+            if (value == null || value.trim().length() == 0) {
+                return null;
+            }
             return Long.parseLong(value);
         }
     }
@@ -59,6 +65,9 @@ public class DefaultParameterValueConverter implements ParameterValueConverter {
     public static class DoubleConverter implements Converter {
         @Override
         public Object convert(Class parameterType, String parameterName, String value) {
+            if (value == null || value.trim().length() == 0) {
+                return null;
+            }
             return Double.parseDouble(value);
         }
     }
@@ -66,6 +75,9 @@ public class DefaultParameterValueConverter implements ParameterValueConverter {
     public static class FloatConverter implements Converter {
         @Override
         public Object convert(Class parameterType, String parameterName, String value) {
+            if (value == null || value.trim().length() == 0) {
+                return null;
+            }
             return Float.parseFloat(value);
         }
     }

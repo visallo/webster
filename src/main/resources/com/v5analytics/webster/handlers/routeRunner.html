@@ -1,0 +1,290 @@
+<html>
+<head>
+  <title>${pageTitle}</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 13px;
+    }
+
+    #wrap {
+      margin: 0 auto;
+    }
+
+    #sidebar {
+      float: left;
+      height: 100%;
+      overflow: hidden;
+      position: fixed;
+      width: 300px;
+      background: #e8e8e8;
+    }
+
+    #sidebar h1 {
+    }
+
+    #route {
+      margin-left: 310px;
+      margin-top: 10px;
+      width: 70%;
+    }
+
+    #routes ul {
+      padding-left: 10px;
+    }
+
+    #routes li {
+      list-style-type: none;
+      padding-bottom: 5px;
+    }
+
+    .method {
+      display: inline-block;
+      color: #ffffff;
+      background-color: #7b7b7b;
+      border-radius: 3px;
+      padding: 2px 4px;
+      font-size: 10.998px;
+      font-weight: bold;
+      line-height: 14px;
+      vertical-align: baseline;
+      white-space: nowrap;
+      text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+    }
+
+    .method-GET {
+      background-color: #4dab58;
+    }
+
+    .method-POST {
+      background-color: #cc9900;
+    }
+
+    .method-DELETE {
+      background-color: #cc3300;
+    }
+
+    .path {
+      display: inline-block;
+    }
+
+    .actions {
+      margin-top: 20px;
+    }
+
+    button {
+      text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+      background-image: linear-gradient(to bottom, #0088cc, #0044cc);
+      background-repeat: repeat-x;
+      border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+      padding: 4px 12px;
+    }
+
+    .actions button {
+      color: #ffffff;
+      background-color: #0044cc;
+    }
+
+    .parameter input {
+      vertical-align: top;
+    }
+
+    img.remove {
+      padding-left: 5px;
+    }
+
+    ${additionalStyles}
+  </style>
+  <script type="text/javascript">
+    var REMOVE_IMAGE_DATA = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyBpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBXaW5kb3dzIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjE5MDc1Q0ZEQTYwQjExRTBBQ0Q5QjFDNDg2Q0E2RDA1IiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjE5MDc1Q0ZFQTYwQjExRTBBQ0Q5QjFDNDg2Q0E2RDA1Ij4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6MTkwNzVDRkJBNjBCMTFFMEFDRDlCMUM0ODZDQTZEMDUiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6MTkwNzVDRkNBNjBCMTFFMEFDRDlCMUM0ODZDQTZEMDUiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz6oBL4wAAAD00lEQVR42nRUb0xTVxQ/fe+10PLSWWwL1cLS0tIpOEwTBUKCFIdIkEoIbGEd6odFgRiMHySLxiV+mImQ+AejfvEPgtNk0zkWs8SgEIxFE1Jp1oFltbJoKDKkhbaDSFvezr22hBG9yc1779xzfue83/mdKwoEAsAwDPj9fvhnehpCoRCMjY3B/Px80eCTJ6WTk5P6xcVF+MxkmjGbzb1zweCDT+TyWG5uLuRv3QoikQgEQQDRSiAMBgze3dnZ2fLc7S5BGwNkoTPEYqBYuxaUSuXTurq60+VlZT/n5eXRYwIEBGhubg6msZpTbW1tPM8L5EzEcQKXlPS/TWzkLFkqFQ40Nf20sLAgCwaDMDs7CxQkhtnOdnS0EydgWaxTJGCZHwVKPA8dPnyHUDE1NQUwMTEBAwMD5dKUlPcg6FBeUdG/afNmL3lPgBDwT/V6b5XV2k/sTBzseldXUzgcBrAPDooKior+pJnQ2VpdfQ8XXL5yxaA3GN7QKrE6VXr6G1tDg2F4eBi+2bPnEa0az7I3bPAjnzyDhJpdLpeJEYspcRzHSXU6nUKv179oPXLEosvKmklNTZ0pKSmxVO3a9cJkMimikYgU6QdWIgGvx6P48ebNcna9Vts40N9vYTkOGJaFEZdLN+HzFVdbrT1iieRVttF4H5/XKnbuHP2ytlbZ1Nx870Z3dz7+Lm19LBIBbUZGCL7dv//3lVxQPvC7sqrK4XQ6Nb/29EBXdzdpiqbeZnOs9iVcqTWaWwx2LBlWL8yEesq8fPUqv7S0BDkbN8L93l7+sd2eCR9YErE4ifH5fENI5rIxiipO02hel1os27cVF3sK8vPlKFh5mlrt+a61dbvRZHodffdu2V/ARGq1OgRnz52zSpKTBSSOlrlOqx2pqa3NwbZCLBpdg7/jrKisdLrd7jUP+/qg4/z5HGN29kvkc5mGY8ePHyVzJdMbjdO0zdjSr+rrr9ntdkDVyhv27Ruidtyon6HR0VE5EV9jc/NvVC4IlqpSLf5y924GeL1eaGtv/56KTCwWZCjM02fOXDjY0tJHbKTSRGbUUd/FS5cuSGUygUVfYjvQ2NgVICMyPj4OyBNU19QMJcCIAEl1XBxkpbrJGRMHMW/Z8jfOqJzMKR04MvUIlllaVvY8MUvsKpDV84ak+/7yeApILB1aMv3kZebtW3A4HPzXNtv1FJ7/l2bHTQJpcHwkeLyLvtix4/YPJ08qycCSWILBLbcdbwDUVLiwsHCvSqU64Q8EGoafPfs8GA4rIqjedenpC6q0tD/wgrthyMoaIfcXsTNx6fwnwACJ2/LLNckUiwAAAABJRU5ErkJggg==';
+    var routes = ${routesJson};
+
+    var clearRequest = function () {
+      document.getElementById('request-headers').innerHTML = createParameterHtml('request-header');
+      document.getElementById('request-url-parameters').innerHTML = createParameterHtml('request-url-parameter');
+      document.getElementById('request-form-datas').innerHTML = createParameterHtml('request-form-data');
+      document.getElementById("response-status").innerHTML = '';
+      document.getElementById("response-text").innerHTML = '';
+    };
+
+    var loadRoute = function (method, path) {
+      var route = routes[method][path];
+      console.log('loading route', route);
+      clearRequest();
+      document.getElementById('request-path').value = route.path;
+      document.getElementById('request-method').value = route.method;
+      var parameterTargetId = 'request-form-datas';
+      var parameterItemClass = 'request-form-data';
+      if (route.method == 'GET') {
+        parameterTargetId = 'request-url-parameters';
+        parameterItemClass = 'request-url-parameter';
+      }
+      var parameterHtml = '';
+      route.parameters.forEach(function (parameter) {
+        parameterHtml += createParameterHtml(parameterItemClass, parameter.name, parameter.defaultValue);
+      });
+      parameterHtml += createParameterHtml(parameterItemClass);
+      document.getElementById(parameterTargetId).innerHTML = parameterHtml;
+    };
+
+    var removeItem = function (e) {
+      var caller = e.target || e.srcElement;
+      var row = caller.parentNode;
+      var wrapper = row.parentNode;
+      wrapper.removeChild(row);
+      ensureBlankParameter(wrapper.id);
+    };
+
+    var onParameterNameChange = function (e) {
+      var caller = e.target || e.srcElement;
+      ensureBlankParameter(caller.parentNode.parentNode.id);
+    };
+
+    var ensureBlankParameter = function (id) {
+      var parameters = getRequestParameters(id, true);
+      var hasBlank = false;
+      parameters.forEach(function (p) {
+        if (!p.name) {
+          hasBlank = true;
+        }
+      });
+      if (!hasBlank) {
+        var className = id.substr(0, id.length - 1);
+        var blankHtml = createParameterHtml(className);
+        var childNode = createNodeFromHtml(blankHtml);
+        document.getElementById(id).appendChild(childNode);
+      }
+    };
+
+    var createNodeFromHtml = function (html) {
+      var div = document.createElement('div');
+      div.innerHTML = html;
+      return div.childNodes[0];
+    };
+
+    var createParameterHtml = function (className, name, value) {
+      name = name || '';
+      value = value || '';
+      return '<div class="parameter ' + className + '"><input class="name" onkeyup="onParameterNameChange(event);" value="' + name + '"><input class="value" value="' + value + '"><img class="remove" onclick="removeItem(event); return false;" src="' + REMOVE_IMAGE_DATA + '"></img></div>';
+    };
+
+    var sendRequest = function () {
+      console.log('sending request');
+      var httpRequest;
+      if (window.XMLHttpRequest) { // Mozilla, Safari, IE7+ ...
+        httpRequest = new XMLHttpRequest();
+      } else if (window.ActiveXObject) { // IE 6 and older
+        httpRequest = new ActiveXObject("Microsoft.XMLHTTP");
+      }
+      var requestMethod = document.getElementById('request-method').value;
+      var requestPath = document.getElementById('request-path').value;
+      httpRequest.onreadystatechange = function () {
+        if (httpRequest.readyState == 4) {
+          document.getElementById("response-status").innerHTML = httpRequest.status;
+          document.getElementById("response-text").innerText = httpRequest.responseText;
+        }
+      };
+      var urlParameters = getRequestParameters('request-url-parameters');
+      var urlParameterString = urlParameters.length > 0 ? '?' + toParameterString(urlParameters) : '';
+      httpRequest.open(requestMethod, requestPath + urlParameterString, true);
+
+      var headerParameters = getRequestParameters('request-headers');
+      headerParameters.forEach(function (headerParameter) {
+        httpRequest.setRequestHeader(headerParameter.name, headerParameter.value);
+      });
+      if (requestMethod != 'GET') {
+        httpRequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      }
+
+      var formParameters = getRequestParameters('request-form-datas');
+      var formParameterString = toParameterString(formParameters);
+      httpRequest.send(formParameterString.length > 0 ? formParameterString : null);
+    };
+
+    var getRequestParameters = function (wrapperNodeId, includeBlankParameters) {
+      var results = [];
+      var parameterNodes = document.getElementById(wrapperNodeId).childNodes;
+      for (var i = 0; i < parameterNodes.length; i++) {
+        var name = parameterNodes[i].childNodes[0].value;
+        var value = parameterNodes[i].childNodes[1].value;
+        if (name || includeBlankParameters) {
+          results.push({name: name, value: value});
+        }
+      }
+      return results;
+    };
+
+    var toParameterString = function (urlParameters) {
+      var results = '';
+      for (var i = 0; i < urlParameters.length; i++) {
+        if (i > 0) {
+          results += '&';
+        }
+        results += encodeURIComponent(urlParameters[i].name);
+        results += '=';
+        results += encodeURIComponent(urlParameters[i].value);
+      }
+      return results;
+    };
+
+    ${additionalJavascript}
+  </script>
+</head>
+<body>
+<div id="wrap">
+  <div id="sidebar">
+    <h1>${pageTitle}</h1>
+
+    <div id="routes">
+      ${routes}
+    </div>
+  </div>
+  <div id="route">
+    <form>
+      <div id="request-url">
+        <input id="request-path">
+        <select id="request-method">
+          <option value="GET" selected="">GET</option>
+          <option value="POST">POST</option>
+          <option value="PUT">PUT</option>
+          <option value="PATCH">PATCH</option>
+          <option value="DELETE">DELETE</option>
+          <option value="COPY">COPY</option>
+          <option value="HEAD">HEAD</option>
+          <option value="OPTIONS">OPTIONS</option>
+          <option value="LINK">LINK</option>
+          <option value="UNLINK">UNLINK</option>
+          <option value="PURGE">PURGE</option>
+        </select>
+      </div>
+
+      <h3>Headers</h3>
+
+      <div id="request-headers">
+      </div>
+
+      <h3>URL Parameters</h3>
+
+      <div id="request-url-parameters">
+      </div>
+
+      <h3>Form Data</h3>
+
+      <div id="request-form-datas">
+      </div>
+
+      <div class="actions">
+        <button onclick="try{sendRequest();}catch(err){console.log(err);} return false;">Send</button>
+      </div>
+    </form>
+    <hr/>
+    <div id="response">
+      <div id="response-status"></div>
+      <pre id="response-text"></pre>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">clearRequest();</script>
+</body>
+</html>

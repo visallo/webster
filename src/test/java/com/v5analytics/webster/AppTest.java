@@ -40,6 +40,7 @@ public class AppTest {
         requestDispatcher = mock(RequestDispatcher.class);
         servletContext = mock(ServletContext.class);
         app = new App(servletContext);
+        when(request.getAttribute(App.WEBSTER_APP_ATTRIBUTE_NAME)).thenReturn(app);
     }
 
     @Test

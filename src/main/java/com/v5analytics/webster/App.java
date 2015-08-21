@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class App {
     private static final Logger LOGGER = LoggerFactory.getLogger(App.class);
-    private static final String WEBSTER_APP_ATTRIBUTE_NAME = "websterApp";
+    public static final String WEBSTER_APP_ATTRIBUTE_NAME = "websterApp";
     private Router router;
     private Map<String, Object> config;
 

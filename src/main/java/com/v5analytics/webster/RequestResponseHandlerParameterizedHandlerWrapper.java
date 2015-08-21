@@ -25,7 +25,7 @@ public class RequestResponseHandlerParameterizedHandlerWrapper implements Reques
         this.handler = handler;
         this.handleMethod = findMethodWithHandleAnnotation(handler);
         if (this.handleMethod == null) {
-            throw new WebsterException("Could not find method annotated with " + Handle.class.getName() + " annotation");
+            throw new WebsterException("Could not find method annotated with " + Handle.class.getName() + " annotation on class " + handler.getClass().getName());
         }
         parameterProviders = createParameterProviders(this.handleMethod);
     }
@@ -57,6 +57,10 @@ public class RequestResponseHandlerParameterizedHandlerWrapper implements Reques
             parameterProvider = new ServletResponseParameterProvider();
         } else if (HandlerChain.class.isAssignableFrom(parameterType)) {
             parameterProvider = new HandlerChainParameterProvider();
+        } else if (App.class.isAssignableFrom(parameterType)) {
+            parameterProvider = new AppParameterProvider();
+        } else if (Router.class.isAssignableFrom(parameterType)) {
+            parameterProvider = new RouterParameterProvider();
         } else if (optionalAnnotation != null) {
             parameterProvider = new OptionalParameterProvider(parameterType, optionalAnnotation, createParameterValueConverter(optionalAnnotation.parameterValueConverter()));
         } else if (requiredAnnotation != null) {
@@ -122,5 +126,17 @@ public class RequestResponseHandlerParameterizedHandlerWrapper implements Reques
             args[i] = this.parameterProviders[i].getParameter(request, response, chain);
         }
         this.handleMethod.invoke(this.handler, args);
+    }
+
+    public ParameterizedHandler getHandler() {
+        return handler;
+    }
+
+    public Method getHandleMethod() {
+        return handleMethod;
+    }
+
+    public ParameterProvider[] getParameterProviders() {
+        return parameterProviders;
     }
 }

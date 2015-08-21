@@ -37,4 +37,11 @@ public abstract class ValueParameterProvider extends ParameterProvider {
         return parameterValueConverter.toValue(parameterType, parameterName, value);
     }
 
+    public Class<?> getParameterType() {
+        return parameterType;
+    }
+
+    public ParameterValueConverter getParameterValueConverter() {
+        return parameterValueConverter;
+    }
 }

@@ -83,6 +83,9 @@ public class Router {
 
         if (route == null) {
             RequestDispatcher rd = servletContext.getNamedDispatcher("default");
+            if (rd == null) {
+                throw new WebsterException("Could not get named dispatcher 'default'");
+            }
             HttpServletRequest wrapped = new HttpServletRequestWrapper(request) {
                 public String getServletPath() {
                     return "";
