@@ -54,6 +54,7 @@ public class TestApp {
             app.post("/withParameters", WithParametersHandler.class);
             app.delete("/withParameters", WithParametersHandler.class);
             app.get("/long/path/name/to/test/wrapping/of/really/long/path/names/test/wrapping/of/really/long/path/names", WithParametersHandler.class);
+            app.get("/json", ReturnsJsonHandler.class);
         }
 
         @Override

@@ -190,8 +190,14 @@
       var requestPath = document.getElementById('request-path').value;
       httpRequest.onreadystatechange = function () {
         if (httpRequest.readyState == 4) {
+          var responseText = httpRequest.responseText;
+          try {
+            responseText = JSON.stringify(JSON.parse(responseText), null, 2);
+          } catch (e) {
+            // guess it's not json
+          }
           document.getElementById("response-status").innerHTML = httpRequest.status;
-          document.getElementById("response-text").innerText = httpRequest.responseText;
+          document.getElementById("response-text").innerText = responseText;
         }
       };
       var urlParameters = getRequestParameters('request-url-parameters');
