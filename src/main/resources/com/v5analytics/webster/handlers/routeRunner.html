@@ -173,7 +173,7 @@
       document.getElementById('request-method').value = route.method;
       var parameterTargetId = 'request-form-datas';
       var parameterItemClass = 'request-form-data';
-      if (route.method == 'GET') {
+      if (route.method == 'GET' || route.method == 'DELETE') {
         parameterTargetId = 'request-url-parameters';
         parameterItemClass = 'request-url-parameter';
       }
