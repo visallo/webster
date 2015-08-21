@@ -1,7 +1,7 @@
 package com.v5analytics.webster.handlers;
 
-import com.v5analytics.webster.Handler;
 import com.v5analytics.webster.HandlerChain;
+import com.v5analytics.webster.RequestResponseHandler;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class StaticResourceHandler implements Handler {
+public class StaticResourceHandler implements RequestResponseHandler {
     private final String pathInfo;
     private Class classRef;
     private String contentType;
@@ -21,6 +21,7 @@ public class StaticResourceHandler implements Handler {
         this.contentType = contentType;
     }
 
+    @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, HandlerChain chain) throws Exception {
         InputStream in = classRef.getResourceAsStream(pathInfo);
         ServletOutputStream out = response.getOutputStream();
