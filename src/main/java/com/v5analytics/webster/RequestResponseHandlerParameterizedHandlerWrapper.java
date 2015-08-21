@@ -30,7 +30,7 @@ public class RequestResponseHandlerParameterizedHandlerWrapper implements Reques
         parameterProviders = createParameterProviders(this.handleMethod);
     }
 
-    public static void registeredParameterProviderClass(Class handledClass, Class<? extends ParameterProvider> parameterProviderClass) {
+    public static <T> void registeredParameterProviderClass(Class<T> handledClass, Class<? extends ParameterProvider<T>> parameterProviderClass) {
         registeredParameterProviderClasses.put(handledClass, parameterProviderClass);
     }
 

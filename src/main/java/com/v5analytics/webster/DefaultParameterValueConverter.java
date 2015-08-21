@@ -18,7 +18,7 @@ public class DefaultParameterValueConverter implements ParameterValueConverter {
         registerValueConverter(String.class, new StringConverter());
     }
 
-    public static void registerValueConverter(Class clazz, Converter converter) {
+    public static <T> void registerValueConverter(Class<T> clazz, Converter<T> converter) {
         valueConverters.put(clazz, converter);
     }
 
@@ -42,9 +42,9 @@ public class DefaultParameterValueConverter implements ParameterValueConverter {
         T convert(Class parameterType, String parameterName, String value);
     }
 
-    public static class IntegerConverter implements Converter {
+    public static class IntegerConverter implements Converter<Integer> {
         @Override
-        public Object convert(Class parameterType, String parameterName, String value) {
+        public Integer convert(Class parameterType, String parameterName, String value) {
             if (value == null || value.trim().length() == 0) {
                 return null;
             }
@@ -52,9 +52,9 @@ public class DefaultParameterValueConverter implements ParameterValueConverter {
         }
     }
 
-    public static class LongConverter implements Converter {
+    public static class LongConverter implements Converter<Long> {
         @Override
-        public Object convert(Class parameterType, String parameterName, String value) {
+        public Long convert(Class parameterType, String parameterName, String value) {
             if (value == null || value.trim().length() == 0) {
                 return null;
             }
@@ -62,9 +62,9 @@ public class DefaultParameterValueConverter implements ParameterValueConverter {
         }
     }
 
-    public static class DoubleConverter implements Converter {
+    public static class DoubleConverter implements Converter<Double> {
         @Override
-        public Object convert(Class parameterType, String parameterName, String value) {
+        public Double convert(Class parameterType, String parameterName, String value) {
             if (value == null || value.trim().length() == 0) {
                 return null;
             }
@@ -72,9 +72,9 @@ public class DefaultParameterValueConverter implements ParameterValueConverter {
         }
     }
 
-    public static class FloatConverter implements Converter {
+    public static class FloatConverter implements Converter<Float> {
         @Override
-        public Object convert(Class parameterType, String parameterName, String value) {
+        public Float convert(Class parameterType, String parameterName, String value) {
             if (value == null || value.trim().length() == 0) {
                 return null;
             }
@@ -82,9 +82,9 @@ public class DefaultParameterValueConverter implements ParameterValueConverter {
         }
     }
 
-    public static class StringConverter implements Converter {
+    public static class StringConverter implements Converter<String> {
         @Override
-        public Object convert(Class parameterType, String parameterName, String value) {
+        public String convert(Class parameterType, String parameterName, String value) {
             return value;
         }
     }

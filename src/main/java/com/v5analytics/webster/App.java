@@ -158,11 +158,11 @@ public class App {
         return results;
     }
 
-    public static void registeredParameterProviderClass(Class handledClass, Class<? extends ParameterProvider> parameterProviderClass) {
+    public static <T> void registeredParameterProviderClass(Class<T> handledClass, Class<? extends ParameterProvider<T>> parameterProviderClass) {
         RequestResponseHandlerParameterizedHandlerWrapper.registeredParameterProviderClass(handledClass, parameterProviderClass);
     }
 
-    public static void registerParameterValueConverter(Class clazz, DefaultParameterValueConverter.Converter converter) {
+    public static <T> void registerParameterValueConverter(Class<T> clazz, DefaultParameterValueConverter.Converter<T> converter) {
         DefaultParameterValueConverter.registerValueConverter(clazz, converter);
     }
 }
