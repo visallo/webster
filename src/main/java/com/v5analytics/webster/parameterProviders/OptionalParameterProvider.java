@@ -16,9 +16,13 @@ public class OptionalParameterProvider<T> extends ValueParameterProvider<T> {
 
     @Override
     public T getParameter(HttpServletRequest request, HttpServletResponse response, HandlerChain chain) {
-        String value = getParameterOrAttribute(request);
+        String[] value = getParameterOrAttribute(request);
         if (value == null) {
-            value = defaultValue;
+            if (defaultValue == null) {
+                value = null;
+            } else {
+                value = new String[]{defaultValue};
+            }
         }
         return toParameterType(value);
     }

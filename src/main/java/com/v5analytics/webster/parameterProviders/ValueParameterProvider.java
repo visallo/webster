@@ -15,12 +15,20 @@ public abstract class ValueParameterProvider<T> extends ParameterProvider<T> {
         this.parameterValueConverter = parameterValueConverter;
     }
 
-    protected String getParameterOrAttribute(final HttpServletRequest request) {
-        String paramValue = request.getParameter(parameterName);
+    protected String[] getParameterOrAttribute(final HttpServletRequest request) {
+        String[] paramValue = request.getParameterValues(parameterName);
         if (paramValue == null) {
             Object paramValueObject = request.getAttribute(parameterName);
             if (paramValueObject != null) {
-                paramValue = paramValueObject.toString();
+                if (paramValueObject.getClass().isArray()) {
+                    Object[] arr = (Object[]) paramValueObject;
+                    paramValue = new String[arr.length];
+                    for (int i = 0; i < arr.length; i++) {
+                        paramValue[i] = arr[i] == null ? null : arr[i].toString();
+                    }
+                } else {
+                    paramValue = new String[]{paramValueObject.toString()};
+                }
             }
             if (paramValue == null) {
                 return null;
@@ -33,7 +41,7 @@ public abstract class ValueParameterProvider<T> extends ParameterProvider<T> {
         return parameterName;
     }
 
-    protected T toParameterType(String value) {
+    protected T toParameterType(String[] value) {
         return (T) parameterValueConverter.toValue(parameterType, parameterName, value);
     }
 

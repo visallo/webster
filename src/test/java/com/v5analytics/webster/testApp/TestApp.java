@@ -38,7 +38,7 @@ public class TestApp {
             super.init(config);
 
             App.registeredParameterProviderFactory(new TestUserParameterProviderFactory());
-            App.registerParameterValueConverter(TestParameterObject.class, new DefaultParameterValueConverter.Converter<TestParameterObject>() {
+            App.registerParameterValueConverter(TestParameterObject.class, new DefaultParameterValueConverter.SingleValueConverter<TestParameterObject>() {
                 @Override
                 public TestParameterObject convert(Class parameterType, String parameterName, String value) {
                     return TestParameterObject.parse(value);

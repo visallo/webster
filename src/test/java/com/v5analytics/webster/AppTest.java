@@ -28,7 +28,7 @@ public class AppTest {
     @Before
     public void before() {
         App.registeredParameterProviderFactory(new TestUserParameterProviderFactory());
-        App.registerParameterValueConverter(TestParameterObject.class, new DefaultParameterValueConverter.Converter<TestParameterObject>() {
+        App.registerParameterValueConverter(TestParameterObject.class, new DefaultParameterValueConverter.SingleValueConverter<TestParameterObject>() {
             @Override
             public TestParameterObject convert(Class parameterType, String parameterName, String value) {
                 return TestParameterObject.parse(value);
@@ -59,9 +59,10 @@ public class AppTest {
         when(request.getMethod()).thenReturn("GET");
         when(request.getRequestURI()).thenReturn(path);
         when(request.getContextPath()).thenReturn("");
-        when(request.getParameter("requiredString")).thenReturn("requiredValue");
-        when(request.getParameter("requiredInt")).thenReturn("1");
-        when(request.getParameter("testParameterObject")).thenReturn("testParameterObjectValue");
+        when(request.getParameterValues("requiredString")).thenReturn(new String[]{"requiredValue"});
+        when(request.getParameterValues("requiredInt")).thenReturn(new String[]{"1"});
+        when(request.getParameterValues("testParameterObject")).thenReturn(new String[]{"testParameterObjectValue"});
+        when(request.getParameterValues("requiredStringArray[]")).thenReturn(new String[]{"requiredStringArrayValue1"});
         app.handle(request, response);
         verify(request).setAttribute("handled", "true");
     }
@@ -73,10 +74,11 @@ public class AppTest {
         when(request.getMethod()).thenReturn("GET");
         when(request.getRequestURI()).thenReturn(path);
         when(request.getContextPath()).thenReturn("");
-        when(request.getParameter("requiredString")).thenReturn("requiredValue");
-        when(request.getParameter("requiredInt")).thenReturn("1");
+        when(request.getParameterValues("requiredString")).thenReturn(new String[]{"requiredValue"});
+        when(request.getParameterValues("requiredInt")).thenReturn(new String[]{"1"});
         when(request.getParameter("userId")).thenReturn("userA");
-        when(request.getParameter("testParameterObject")).thenReturn("testParameterObjectValue");
+        when(request.getParameterValues("testParameterObject")).thenReturn(new String[]{"testParameterObjectValue"});
+        when(request.getParameterValues("requiredStringArray[]")).thenReturn(new String[]{"requiredStringArrayValue1"});
         app.handle(request, response);
         verify(request).setAttribute("handled", "true");
         verify(request).setAttribute("requiredInt", 1);
@@ -86,6 +88,8 @@ public class AppTest {
         verify(request).setAttribute("requiredString", "requiredValue");
         verify(request).setAttribute("optionalStringWithDefault", "default value");
         verify(request).setAttribute("testParameterObject", new TestParameterObject("testParameterObjectValue"));
+        verify(request).setAttribute("requiredStringArray", new String[]{"requiredStringArrayValue1"});
+        verify(request).setAttribute("optionalStringArray", null);
         verify(request).setAttribute("user", new TestUser("userA"));
     }
 

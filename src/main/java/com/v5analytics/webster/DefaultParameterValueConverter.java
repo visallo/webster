@@ -16,6 +16,7 @@ public class DefaultParameterValueConverter implements ParameterValueConverter {
         registerValueConverter(Float.class, new FloatConverter());
         registerValueConverter(Float.TYPE, new FloatConverter());
         registerValueConverter(String.class, new StringConverter());
+        registerValueConverter(String[].class, new StringArrayConverter());
     }
 
     public static <T> void registerValueConverter(Class<T> clazz, Converter<T> converter) {
@@ -23,7 +24,7 @@ public class DefaultParameterValueConverter implements ParameterValueConverter {
     }
 
     @Override
-    public Object toValue(Class parameterType, String parameterName, String value) {
+    public Object toValue(Class parameterType, String parameterName, String[] value) {
         try {
             if (value == null) {
                 return null;
@@ -33,16 +34,44 @@ public class DefaultParameterValueConverter implements ParameterValueConverter {
                 return valueConverter.convert(parameterType, parameterName, value);
             }
         } catch (Exception ex) {
-            throw new WebsterException("Could not parse value \"" + value + "\" for parameter \"" + parameterName + "\"");
+            throw new WebsterException("Could not parse value \"" + toString(value) + "\" for parameter \"" + parameterName + "\"");
         }
         throw new WebsterException("Inconvertible parameter type for parameter \"" + parameterName + "\"");
     }
 
-    public interface Converter<T> {
-        T convert(Class parameterType, String parameterName, String value);
+    private String toString(String[] value) {
+        StringBuilder result = new StringBuilder();
+        boolean first = true;
+        for (String v : value) {
+            if (!first) {
+                result.append(",");
+            }
+            result.append(v);
+            first = false;
+        }
+        return result.toString();
     }
 
-    public static class IntegerConverter implements Converter<Integer> {
+    public interface Converter<T> {
+        T convert(Class parameterType, String parameterName, String[] value);
+    }
+
+    public abstract static class SingleValueConverter<T> implements Converter<T> {
+        @Override
+        public T convert(Class parameterType, String parameterName, String[] value) {
+            if (value.length == 0) {
+                return null;
+            }
+            if (value.length > 1) {
+                throw new WebsterException("Too many " + parameterName + " found. Expected 1 found " + value.length);
+            }
+            return convert(parameterType, parameterName, value[0]);
+        }
+
+        public abstract T convert(Class parameterType, String parameterName, String value);
+    }
+
+    public static class IntegerConverter extends SingleValueConverter<Integer> {
         @Override
         public Integer convert(Class parameterType, String parameterName, String value) {
             if (value == null || value.trim().length() == 0) {
@@ -52,7 +81,7 @@ public class DefaultParameterValueConverter implements ParameterValueConverter {
         }
     }
 
-    public static class LongConverter implements Converter<Long> {
+    public static class LongConverter extends SingleValueConverter<Long> {
         @Override
         public Long convert(Class parameterType, String parameterName, String value) {
             if (value == null || value.trim().length() == 0) {
@@ -62,7 +91,7 @@ public class DefaultParameterValueConverter implements ParameterValueConverter {
         }
     }
 
-    public static class DoubleConverter implements Converter<Double> {
+    public static class DoubleConverter extends SingleValueConverter<Double> {
         @Override
         public Double convert(Class parameterType, String parameterName, String value) {
             if (value == null || value.trim().length() == 0) {
@@ -72,7 +101,7 @@ public class DefaultParameterValueConverter implements ParameterValueConverter {
         }
     }
 
-    public static class FloatConverter implements Converter<Float> {
+    public static class FloatConverter extends SingleValueConverter<Float> {
         @Override
         public Float convert(Class parameterType, String parameterName, String value) {
             if (value == null || value.trim().length() == 0) {
@@ -82,9 +111,16 @@ public class DefaultParameterValueConverter implements ParameterValueConverter {
         }
     }
 
-    public static class StringConverter implements Converter<String> {
+    public static class StringConverter extends SingleValueConverter<String> {
         @Override
         public String convert(Class parameterType, String parameterName, String value) {
+            return value;
+        }
+    }
+
+    public static class StringArrayConverter implements Converter<String[]> {
+        @Override
+        public String[] convert(Class parameterType, String parameterName, String[] value) {
             return value;
         }
     }
