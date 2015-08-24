@@ -7,6 +7,8 @@ public class DefaultParameterValueConverter implements ParameterValueConverter {
     private static final Map<Class, Converter> valueConverters = new HashMap<>();
 
     static {
+        registerValueConverter(Boolean.class, new BooleanConverter());
+        registerValueConverter(Boolean.TYPE, new BooleanConverter());
         registerValueConverter(Integer.class, new IntegerConverter());
         registerValueConverter(Integer.TYPE, new IntegerConverter());
         registerValueConverter(Long.class, new LongConverter());
@@ -69,6 +71,16 @@ public class DefaultParameterValueConverter implements ParameterValueConverter {
         }
 
         public abstract T convert(Class parameterType, String parameterName, String value);
+    }
+
+    public static class BooleanConverter extends SingleValueConverter<Boolean> {
+        @Override
+        public Boolean convert(Class parameterType, String parameterName, String value) {
+            if (value == null || value.trim().length() == 0) {
+                return null;
+            }
+            return Boolean.parseBoolean(value);
+        }
     }
 
     public static class IntegerConverter extends SingleValueConverter<Integer> {
