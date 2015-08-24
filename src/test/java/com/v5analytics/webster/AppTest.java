@@ -59,6 +59,7 @@ public class AppTest {
         when(request.getMethod()).thenReturn("GET");
         when(request.getRequestURI()).thenReturn(path);
         when(request.getContextPath()).thenReturn("");
+        when(request.getParameterValues("requiredBoolean")).thenReturn(new String[]{""});
         when(request.getParameterValues("requiredString")).thenReturn(new String[]{"requiredValue"});
         when(request.getParameterValues("requiredInt")).thenReturn(new String[]{"1"});
         when(request.getParameterValues("testParameterObject")).thenReturn(new String[]{"testParameterObjectValue"});
@@ -74,6 +75,7 @@ public class AppTest {
         when(request.getMethod()).thenReturn("GET");
         when(request.getRequestURI()).thenReturn(path);
         when(request.getContextPath()).thenReturn("");
+        when(request.getParameterValues("requiredBoolean")).thenReturn(new String[]{""});
         when(request.getParameterValues("requiredString")).thenReturn(new String[]{"requiredValue"});
         when(request.getParameterValues("requiredInt")).thenReturn(new String[]{"1"});
         when(request.getParameter("userId")).thenReturn("userA");
@@ -81,6 +83,8 @@ public class AppTest {
         when(request.getParameterValues("requiredStringArray[]")).thenReturn(new String[]{"requiredStringArrayValue1"});
         app.handle(request, response);
         verify(request).setAttribute("handled", "true");
+        verify(request).setAttribute("requiredBoolean", true);
+        verify(request).setAttribute("optionalBooleanWithDefault", false);
         verify(request).setAttribute("requiredInt", 1);
         verify(request).setAttribute("optionalIntWithDefault", 42);
         verify(request).setAttribute("optionalInteger", null);

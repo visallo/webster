@@ -15,6 +15,8 @@ public class TestParameterizedHandler implements ParameterizedHandler {
             HandlerChain chain,
             App app,
             Router router,
+            @Required(name = "requiredBoolean") boolean requiredBoolean,
+            @Optional(name = "optionalBooleanWithDefault", defaultValue = "false") boolean optionalBooleanWithDefault,
             @Required(name = "requiredInt") int requiredInt,
             @Optional(name = "optionalIntWithDefault", defaultValue = "42") int optionalIntWithDefault,
             @Optional(name = "optionalInteger") Integer optionalInteger,
@@ -27,6 +29,8 @@ public class TestParameterizedHandler implements ParameterizedHandler {
             TestUser user
     ) {
         request.setAttribute("handled", "true");
+        request.setAttribute("requiredBoolean", requiredBoolean);
+        request.setAttribute("optionalBooleanWithDefault", optionalBooleanWithDefault);
         request.setAttribute("requiredInt", requiredInt);
         request.setAttribute("optionalIntWithDefault", optionalIntWithDefault);
         request.setAttribute("optionalInteger", optionalInteger);

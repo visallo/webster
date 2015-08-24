@@ -76,10 +76,10 @@ public class DefaultParameterValueConverter implements ParameterValueConverter {
     public static class BooleanConverter extends SingleValueConverter<Boolean> {
         @Override
         public Boolean convert(Class parameterType, String parameterName, String value) {
-            if (value == null || value.trim().length() == 0) {
+            if (value == null) {
                 return null;
             }
-            return Boolean.parseBoolean(value);
+            return value.length() == 0 || Boolean.parseBoolean(value);
         }
     }
 
