@@ -245,6 +245,7 @@
     var createParameterHtml = function (className, name, value, required) {
       name = name || '';
       value = value || '';
+      value = value.replace(/"/g, '&quot;');
       return '<div class="parameter ' + className + ' ' + (required ? 'required' : '') + '"><input class="name" placeholder="Name" onkeyup="onParameterNameChange(event);" value="' + name + '"><input class="value" placeholder="Value" value="' + value + '"><img class="remove" onclick="removeItem(event); return false;" src="' + REMOVE_IMAGE_DATA + '"></img></div>';
     };
 
@@ -334,6 +335,78 @@
       }
     };
 
+    var stripQuotes = function (str) {
+      var m;
+      if (m = str.match(/^'(.*)'$/)) {
+        return m[1];
+      }
+      if (m = str.match(/^"(.*)"$/)) {
+        return m[1];
+      }
+      return str;
+    };
+
+    var ignoredCurlParameters = ['cookie', 'origin', 'accept-encoding', 'accept-language', 'user-agent', 'content-type', 'accept', 'referer', 'connection'];
+
+    var parseUrlParameters = function (str) {
+      var results = [];
+      var urlParameters = str.split('&');
+      for (i = 0; i < urlParameters.length; i++) {
+        var urlParameterParts = urlParameters[i].match(/(.*?)=(.*)/);
+        if (urlParameterParts) {
+          results.push([urlParameterParts[1], decodeURIComponent(urlParameterParts[2])]);
+        } else {
+          results.push([urlParameters[i]]);
+        }
+      }
+      return results;
+    };
+
+    var requestPathKeyUp = function () {
+      var i;
+      var requestPath = document.getElementById('request-path').value;
+      var m = requestPath.match(/curl '(.*?)'(.*)/);
+      if (m) {
+        clearRequest();
+        var method = 'GET';
+        var url = m[1];
+        var parameters = m[2].match(/[^\s']+|'[^']+'/g);
+
+        if (m = url.match(/(.*?)\?(.*)/)) {
+          url = m[1];
+          var urlParameters = parseUrlParameters(m[2]);
+          for (i = 0; i < urlParameters.length; i++) {
+            addUrlParameter(urlParameters[i][0], urlParameters[i][1] || '');
+          }
+        }
+        document.getElementById('request-path').value = url;
+
+        for (i = 0; i < parameters.length; i++) {
+          parameters[i] = stripQuotes(parameters[i]);
+          if (parameters[i] == '-H') {
+            i++;
+            var header = stripQuotes(parameters[i]);
+            if (m = header.match(/(.*?):(.*)/)) {
+              var parameterName = m[1].trim();
+              var parameterValue = m[2].trim();
+              if (ignoredCurlParameters.indexOf(parameterName.toLowerCase()) >= 0) {
+                continue;
+              }
+              addHeaderParameter(parameterName, parameterValue);
+            }
+          } else if (parameters[i] == '--data') {
+            i++;
+            method = 'POST';
+            var postData = parseUrlParameters(stripQuotes(parameters[i]));
+            for (var postDataIndex = 0; postDataIndex < postData.length; postDataIndex++) {
+              addFormParameter(postData[postDataIndex][0], postData[postDataIndex][1]);
+            }
+          }
+        }
+        document.getElementById('request-method').value = method;
+      }
+    };
+
     ${additionalJavascript}
   </script>
 </head>
@@ -351,7 +424,7 @@
   <div id="route">
     <form>
       <div id="request-url">
-        <input id="request-path" placeholder="URL">
+        <input id="request-path" placeholder="URL" onkeyup="requestPathKeyUp();">
         <select id="request-method">
           <option value="GET" selected="">GET</option>
           <option value="POST">POST</option>
