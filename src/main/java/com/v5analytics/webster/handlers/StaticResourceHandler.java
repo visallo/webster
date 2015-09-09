@@ -24,6 +24,9 @@ public class StaticResourceHandler implements RequestResponseHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, HandlerChain chain) throws Exception {
         InputStream in = classRef.getResourceAsStream(pathInfo);
+        if (in == null) {
+            throw new IOException("Could not find resource at: " + pathInfo);
+        }
         ServletOutputStream out = response.getOutputStream();
         response.setContentType(contentType);
         copy(in, out);
