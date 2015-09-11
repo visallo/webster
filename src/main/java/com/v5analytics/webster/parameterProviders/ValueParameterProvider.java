@@ -31,7 +31,10 @@ public abstract class ValueParameterProvider<T> extends ParameterProvider<T> {
                 }
             }
             if (paramValue == null) {
-                return null;
+                String headerValue = request.getHeader(parameterName);
+                if (headerValue != null) {
+                    paramValue = new String[]{headerValue};
+                }
             }
         }
         return paramValue;
