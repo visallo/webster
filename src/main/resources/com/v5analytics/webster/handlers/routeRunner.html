@@ -163,6 +163,7 @@
       document.getElementById('request-form-datas').innerHTML = createParameterHtml('request-form-data');
       document.getElementById("response-status").innerHTML = '';
       document.getElementById("response-text").innerHTML = '';
+      document.getElementById("response-img").innerHTML = '';
     };
 
     var loadRoute = function (method, path) {
@@ -261,19 +262,38 @@
       var requestPath = document.getElementById('request-path').value;
       httpRequest.onreadystatechange = function () {
         if (httpRequest.readyState == 4) {
-          var responseText = httpRequest.responseText;
-          try {
-            responseText = JSON.stringify(JSON.parse(responseText), null, 2);
-          } catch (e) {
-            // guess it's not json
+          document.getElementById('response-status').innerHTML = httpRequest.status;
+
+          var contentType = httpRequest.getResponseHeader('content-type');
+          var blob = httpRequest.response;
+          if (contentType && contentType.indexOf('image') == 0) {
+            var img = document.createElement('img');
+            img.onload = function (e) {
+              window.URL.revokeObjectURL(img.src); // Clean up after yourself.
+            };
+            img.src = window.URL.createObjectURL(blob);
+            document.getElementById('response-img').appendChild(img);
+            document.getElementById('response-text').innerText = '';
+          } else {
+            var myReader = new FileReader();
+            myReader.addEventListener("loadend", function (e) {
+              var responseText = e.srcElement.result;
+              try {
+                responseText = JSON.stringify(JSON.parse(responseText), null, 2);
+              } catch (e) {
+                // guess it's not json
+              }
+              document.getElementById('response-img').innerHTML = '';
+              document.getElementById('response-text').innerText = responseText;
+            });
+            myReader.readAsText(blob);
           }
-          document.getElementById("response-status").innerHTML = httpRequest.status;
-          document.getElementById("response-text").innerText = responseText;
         }
       };
       var urlParameters = getRequestParameters('request-url-parameters');
       var urlParameterString = urlParameters.length > 0 ? '?' + toParameterString(urlParameters) : '';
       httpRequest.open(requestMethod, requestPath + urlParameterString, true);
+      httpRequest.responseType = 'blob';
 
       var headerParameters = getRequestParameters('request-headers');
       headerParameters.forEach(function (headerParameter) {
@@ -424,7 +444,7 @@
   <div id="route">
     <form>
       <div id="request-url">
-        <input id="request-path" placeholder="URL" onkeyup="requestPathKeyUp();">
+        <input id="request-path" placeholder="URL or Curl command" onkeyup="requestPathKeyUp();">
         <select id="request-method">
           <option value="GET" selected="">GET</option>
           <option value="POST">POST</option>
@@ -462,6 +482,7 @@
     <hr/>
     <div id="response">
       <div id="response-status"></div>
+      <div id="response-img"></div>
       <pre id="response-text"></pre>
     </div>
   </div>
