@@ -2,6 +2,7 @@ package com.v5analytics.webster.testApp;
 
 import com.v5analytics.webster.ParameterizedHandler;
 import com.v5analytics.webster.TestParameterObject;
+import com.v5analytics.webster.annotations.ContentType;
 import com.v5analytics.webster.annotations.Handle;
 import com.v5analytics.webster.annotations.Optional;
 import com.v5analytics.webster.annotations.Required;
@@ -11,6 +12,7 @@ import java.io.IOException;
 
 public class WithParametersHandler implements ParameterizedHandler {
     @Handle
+    @ContentType("text/plain")
     public void handle(
             @Required(name = "requiredInt") int requiredInt,
             @Optional(name = "optionalIntWithDefault", defaultValue = "42") int optionalIntWithDefault,

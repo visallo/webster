@@ -162,6 +162,7 @@
       document.getElementById('request-url-parameters').innerHTML = createParameterHtml('request-url-parameter');
       document.getElementById('request-form-datas').innerHTML = createParameterHtml('request-form-data');
       document.getElementById("response-status").innerHTML = '';
+      document.getElementById("response-contentType").innerHTML = '';
       document.getElementById("response-text").innerHTML = '';
       document.getElementById("response-img").innerHTML = '';
     };
@@ -265,6 +266,8 @@
           document.getElementById('response-status').innerHTML = httpRequest.status;
 
           var contentType = httpRequest.getResponseHeader('content-type');
+          document.getElementById("response-contentType").innerHTML = contentType;
+
           var blob = httpRequest.response;
           if (contentType && contentType.indexOf('image') == 0) {
             var img = document.createElement('img');
@@ -482,6 +485,7 @@
     <hr/>
     <div id="response">
       <div id="response-status"></div>
+      <div id="response-contentType"></div>
       <div id="response-img"></div>
       <pre id="response-text"></pre>
     </div>

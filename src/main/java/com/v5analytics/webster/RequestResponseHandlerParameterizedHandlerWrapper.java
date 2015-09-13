@@ -2,6 +2,8 @@ package com.v5analytics.webster;
 
 import com.v5analytics.webster.annotations.Handle;
 import com.v5analytics.webster.parameterProviders.*;
+import com.v5analytics.webster.resultWriters.ResultWriter;
+import com.v5analytics.webster.resultWriters.ResultWriterFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,6 +17,7 @@ public class RequestResponseHandlerParameterizedHandlerWrapper implements Reques
     private final ParameterizedHandler handler;
     private final Method handleMethod;
     private final ParameterProvider[] parameterProviders;
+    private final ResultWriter resultWriter;
 
     static {
         registeredParameterProviderFactories.add(new AppParameterProviderFactory());
@@ -26,13 +29,19 @@ public class RequestResponseHandlerParameterizedHandlerWrapper implements Reques
         registeredParameterProviderFactories.add(new ServletResponseParameterProviderFactory());
     }
 
-    public RequestResponseHandlerParameterizedHandlerWrapper(ParameterizedHandler handler) {
+    public RequestResponseHandlerParameterizedHandlerWrapper(App app, ParameterizedHandler handler) {
         this.handler = handler;
         this.handleMethod = findMethodWithHandleAnnotation(handler);
         if (this.handleMethod == null) {
             throw new WebsterException("Could not find method annotated with " + Handle.class.getName() + " annotation on class " + handler.getClass().getName());
         }
         parameterProviders = createParameterProviders(this.handleMethod);
+        resultWriter = createResultWriter(app, this.handleMethod);
+    }
+
+    private ResultWriter createResultWriter(App app, Method handleMethod) {
+        ResultWriterFactory resultWriterFactory = app.internalGetResultWriterFactory(handleMethod);
+        return resultWriterFactory.createResultWriter(handleMethod);
     }
 
     public static <T> void registeredParameterProviderFactory(ParameterProviderFactory<T> parameterProviderFactory) {
@@ -83,7 +92,8 @@ public class RequestResponseHandlerParameterizedHandlerWrapper implements Reques
             args[i] = this.parameterProviders[i].getParameter(request, response, chain);
         }
         try {
-            this.handleMethod.invoke(this.handler, args);
+            Object result = this.handleMethod.invoke(this.handler, args);
+            this.resultWriter.write(result, request, response, chain);
         } catch (IllegalArgumentException ex) {
             throw new WebsterException("Could not invoke " + this.handleMethod, ex);
         }
