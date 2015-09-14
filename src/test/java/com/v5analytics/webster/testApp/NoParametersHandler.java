@@ -8,7 +8,7 @@ import java.io.IOException;
 
 public class NoParametersHandler implements ParameterizedHandler {
     @Handle
-    public void handle(HttpServletResponse response) throws IOException {
-        response.getOutputStream().print("ok");
+    public String handle() throws IOException {
+        return "ok";
     }
 }

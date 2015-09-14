@@ -1,18 +1,22 @@
 package com.v5analytics.webster;
 
 import com.v5analytics.webster.parameterProviders.ParameterProviderFactory;
+import com.v5analytics.webster.resultWriters.DefaultResultWriterFactory;
+import com.v5analytics.webster.resultWriters.ResultWriterFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
 public class App {
     private static final Logger LOGGER = LoggerFactory.getLogger(App.class);
     public static final String WEBSTER_APP_ATTRIBUTE_NAME = "websterApp";
+    private static final ResultWriterFactory DEFAULT_RESULT_WRITER_FACTORY = new DefaultResultWriterFactory();
     private Router router;
     private Map<String, Object> config;
 
@@ -150,7 +154,7 @@ public class App {
             if (handlers[i] instanceof RequestResponseHandler) {
                 results[i] = (RequestResponseHandler) handlers[i];
             } else if (handlers[i] instanceof ParameterizedHandler) {
-                results[i] = new RequestResponseHandlerParameterizedHandlerWrapper((ParameterizedHandler) handlers[i]);
+                results[i] = new RequestResponseHandlerParameterizedHandlerWrapper(this, (ParameterizedHandler) handlers[i]);
             } else {
                 throw new WebsterException("Unhandled handler type: " + handlers[i].getClass().getName());
             }
@@ -164,5 +168,13 @@ public class App {
 
     public static <T> void registerParameterValueConverter(Class<T> clazz, DefaultParameterValueConverter.Converter<T> converter) {
         DefaultParameterValueConverter.registerValueConverter(clazz, converter);
+    }
+
+    ResultWriterFactory internalGetResultWriterFactory(Method handleMethod) {
+        return getResultWriterFactory(handleMethod);
+    }
+
+    protected ResultWriterFactory getResultWriterFactory(Method handleMethod) {
+        return DEFAULT_RESULT_WRITER_FACTORY;
     }
 }

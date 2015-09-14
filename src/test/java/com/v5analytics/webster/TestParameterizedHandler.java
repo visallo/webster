@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 public class TestParameterizedHandler implements ParameterizedHandler {
     @Handle
-    public void doIt(
+    public String doIt(
             HttpServletRequest request,
             HttpServletResponse response,
             HandlerChain chain,
@@ -43,5 +43,7 @@ public class TestParameterizedHandler implements ParameterizedHandler {
         request.setAttribute("optionalStringArray", optionalStringArray);
         request.setAttribute("requiredStringInHeader", requiredStringInHeader);
         request.setAttribute("user", user);
+
+        return "OK";
     }
 }

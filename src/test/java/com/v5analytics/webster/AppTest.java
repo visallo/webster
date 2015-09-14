@@ -7,6 +7,7 @@ import org.junit.runners.JUnit4;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -55,6 +56,8 @@ public class AppTest {
 
     @Test
     public void testParameterizedHandlerClass() throws Exception {
+        ServletOutputStream out = mock(ServletOutputStream.class);
+
         app.get(path, TestParameterizedHandler.class);
         when(request.getMethod()).thenReturn("GET");
         when(request.getRequestURI()).thenReturn(path);
@@ -65,12 +68,16 @@ public class AppTest {
         when(request.getParameterValues("testParameterObject")).thenReturn(new String[]{"testParameterObjectValue"});
         when(request.getParameterValues("requiredStringArray[]")).thenReturn(new String[]{"requiredStringArrayValue1"});
         when(request.getHeader("requiredStringInHeader")).thenReturn("requiredStringInHeader");
+        when(response.getOutputStream()).thenReturn(out);
         app.handle(request, response);
         verify(request).setAttribute("handled", "true");
+        verify(out).write("OK".getBytes());
     }
 
     @Test
     public void testParameterizedHandlerInstance() throws Exception {
+        ServletOutputStream out = mock(ServletOutputStream.class);
+
         ParameterizedHandler parameterizedHandler = new TestParameterizedHandler();
         app.get(path, parameterizedHandler);
         when(request.getMethod()).thenReturn("GET");
@@ -83,6 +90,7 @@ public class AppTest {
         when(request.getParameterValues("testParameterObject")).thenReturn(new String[]{"testParameterObjectValue"});
         when(request.getParameterValues("requiredStringArray[]")).thenReturn(new String[]{"requiredStringArrayValue1"});
         when(request.getHeader("requiredStringInHeader")).thenReturn("requiredStringInHeader");
+        when(response.getOutputStream()).thenReturn(out);
         app.handle(request, response);
         verify(request).setAttribute("handled", "true");
         verify(request).setAttribute("requiredBoolean", true);
@@ -98,6 +106,7 @@ public class AppTest {
         verify(request).setAttribute("optionalStringArray", null);
         verify(request).setAttribute("requiredStringInHeader", "requiredStringInHeader");
         verify(request).setAttribute("user", new TestUser("userA"));
+        verify(out).write("OK".getBytes());
     }
 
     @Test
