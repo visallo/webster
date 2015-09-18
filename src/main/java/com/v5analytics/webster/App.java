@@ -34,7 +34,7 @@ public class App {
             Handler[] handlers = instantiateHandlers(classes);
             get(path, handlers);
         } catch (Exception e) {
-            throw new WebsterException(e);
+            throw new WebsterException("Could not execute get method on path " + path, e);
         }
     }
 
@@ -47,7 +47,7 @@ public class App {
             Handler[] handlers = instantiateHandlers(classes);
             post(path, handlers);
         } catch (Exception e) {
-            throw new WebsterException(e);
+            throw new WebsterException("Could not execute post method on path " + path, e);
         }
     }
 
@@ -60,7 +60,7 @@ public class App {
             Handler[] handlers = instantiateHandlers(classes);
             put(path, handlers);
         } catch (Exception e) {
-            throw new WebsterException(e);
+            throw new WebsterException("Could not execute put method on path " + path, e);
         }
     }
 
@@ -73,7 +73,7 @@ public class App {
             Handler[] handlers = instantiateHandlers(classes);
             delete(path, handlers);
         } catch (Exception e) {
-            throw new WebsterException(e);
+            throw new WebsterException("Could not execute delete method on path " + path, e);
         }
     }
 

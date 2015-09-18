@@ -41,7 +41,7 @@ public class TestApp {
             App.registerParameterValueConverter(TestParameterObject.class, new DefaultParameterValueConverter.SingleValueConverter<TestParameterObject>() {
                 @Override
                 public TestParameterObject convert(Class parameterType, String parameterName, String value) {
-                    return TestParameterObject.parse(value);
+                    return TestParameterObjectExtended.parse(value);
                 }
             });
 

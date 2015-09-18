@@ -52,7 +52,7 @@ public class Router {
         } catch (Exception ex) {
             RequestResponseHandler[] handlers = exceptionHandlers.get(ex.getClass());
             if (handlers != null && handlers.length > 0) {
-                LOGGER.error("Caught exception in route", ex);
+                LOGGER.error("Caught exception in route: " + request.getRequestURI(), ex);
                 dispatch(handlers, request, response);
             } else {
                 throw ex;

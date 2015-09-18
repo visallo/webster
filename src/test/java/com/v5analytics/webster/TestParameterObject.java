@@ -7,10 +7,6 @@ public class TestParameterObject {
         this.value = value;
     }
 
-    public static TestParameterObject parse(String value) {
-        return new TestParameterObject(value);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

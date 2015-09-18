@@ -31,7 +31,7 @@ public class DefaultParameterValueConverter implements ParameterValueConverter {
             if (value == null) {
                 return null;
             }
-            Converter valueConverter = valueConverters.get(parameterType);
+            Converter valueConverter = getValueConverterForType(parameterType);
             if (valueConverter != null) {
                 return valueConverter.convert(parameterType, parameterName, value);
             }
@@ -39,6 +39,19 @@ public class DefaultParameterValueConverter implements ParameterValueConverter {
             throw new WebsterException("Could not parse value \"" + toString(value) + "\" for parameter \"" + parameterName + "\"");
         }
         throw new WebsterException("Inconvertible parameter type for parameter \"" + parameterName + "\"");
+    }
+
+    private Converter getValueConverterForType(Class parameterType) {
+        Converter valueConverter = valueConverters.get(parameterType);
+        if (valueConverter != null) {
+            return valueConverter;
+        }
+        for (Map.Entry<Class, Converter> classConverterEntry : valueConverters.entrySet()) {
+            if (classConverterEntry.getKey().isAssignableFrom(parameterType)) {
+                return classConverterEntry.getValue();
+            }
+        }
+        return null;
     }
 
     private String toString(String[] value) {

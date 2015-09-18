@@ -88,8 +88,12 @@ public class RequestResponseHandlerParameterizedHandlerWrapper implements Reques
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, HandlerChain chain) throws Exception {
         Object[] args = new Object[this.parameterProviders.length];
-        for (int i = 0; i < this.parameterProviders.length; i++) {
-            args[i] = this.parameterProviders[i].getParameter(request, response, chain);
+        try {
+            for (int i = 0; i < this.parameterProviders.length; i++) {
+                args[i] = this.parameterProviders[i].getParameter(request, response, chain);
+            }
+        } catch (Exception ex) {
+            throw new WebsterException("Could not parse arguments for path " + request.getRequestURI(), ex);
         }
         try {
             Object result = this.handleMethod.invoke(this.handler, args);

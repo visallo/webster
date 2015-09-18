@@ -25,7 +25,7 @@ public class TestParameterizedHandler implements ParameterizedHandler {
             @Optional(name = "optionalStringWithDefault", defaultValue = "default value") String optionalStringWithDefault,
             @Required(name = "requiredStringArray[]") String[] requiredStringArray,
             @Optional(name = "optionalStringArray[]") String[] optionalStringArray,
-            @Required(name = "testParameterObject") TestParameterObject testParameterObject,
+            @Required(name = "testParameterObject") TestParameterObjectExtended testParameterObject,
             @Required(name = "requiredStringInHeader") String requiredStringInHeader,
             TestUser user
     ) {

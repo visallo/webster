@@ -32,7 +32,7 @@ public class AppTest {
         App.registerParameterValueConverter(TestParameterObject.class, new DefaultParameterValueConverter.SingleValueConverter<TestParameterObject>() {
             @Override
             public TestParameterObject convert(Class parameterType, String parameterName, String value) {
-                return TestParameterObject.parse(value);
+                return TestParameterObjectExtended.parse(value);
             }
         });
         handler = mock(RequestResponseHandler.class);
@@ -101,7 +101,7 @@ public class AppTest {
         verify(request).setAttribute("optionalIntegerWithDefault", 42);
         verify(request).setAttribute("requiredString", "requiredValue");
         verify(request).setAttribute("optionalStringWithDefault", "default value");
-        verify(request).setAttribute("testParameterObject", new TestParameterObject("testParameterObjectValue"));
+        verify(request).setAttribute("testParameterObject", new TestParameterObjectExtended("testParameterObjectValue"));
         verify(request).setAttribute("requiredStringArray", new String[]{"requiredStringArrayValue1"});
         verify(request).setAttribute("optionalStringArray", null);
         verify(request).setAttribute("requiredStringInHeader", "requiredStringInHeader");
