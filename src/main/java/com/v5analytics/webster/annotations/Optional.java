@@ -17,5 +17,7 @@ public @interface Optional {
 
     String defaultValue() default NOT_SET;
 
+    boolean allowEmpty() default true;
+
     Class<? extends ParameterValueConverter> parameterValueConverter() default DefaultParameterValueConverter.class;
 }

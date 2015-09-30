@@ -13,5 +13,7 @@ import java.lang.annotation.Target;
 public @interface Required {
     String name();
 
+    boolean allowEmpty() default true;
+
     Class<? extends ParameterValueConverter> parameterValueConverter() default DefaultParameterValueConverter.class;
 }

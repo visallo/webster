@@ -21,7 +21,7 @@ public class OptionalParameterProviderFactory<T> extends ValueParameterProviderF
         }
         ParameterValueConverter parameterValueConverter = createParameterValueConverter(optionalAnnotation.parameterValueConverter());
         String defaultValue = getDefaultValueFromAnnotation(optionalAnnotation);
-        return new OptionalParameterProvider<>(parameterType, optionalAnnotation.name(), parameterValueConverter, defaultValue);
+        return new OptionalParameterProvider<>(parameterType, optionalAnnotation, parameterValueConverter, defaultValue);
     }
 
     private String getDefaultValueFromAnnotation(Optional optionalAnnotation) {

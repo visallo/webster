@@ -20,7 +20,7 @@ public class RequiredParameterProviderFactory<T> extends ValueParameterProviderF
             throw new WebsterException("Could not find required annotation");
         }
         ParameterValueConverter parameterValueConverter = createParameterValueConverter(requiredAnnotation.parameterValueConverter());
-        return new RequiredParameterProvider<>(parameterType, requiredAnnotation.name(), parameterValueConverter);
+        return new RequiredParameterProvider<>(parameterType, requiredAnnotation, parameterValueConverter);
     }
 
     private static Required getRequiredAnnotation(Annotation[] annotations) {

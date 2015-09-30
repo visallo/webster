@@ -1,5 +1,8 @@
 package com.v5analytics.webster;
 
+import com.v5analytics.webster.annotations.Handle;
+import com.v5analytics.webster.annotations.Optional;
+import com.v5analytics.webster.annotations.Required;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -107,6 +110,53 @@ public class AppTest {
         verify(request).setAttribute("requiredStringInHeader", "requiredStringInHeader");
         verify(request).setAttribute("user", new TestUser("userA"));
         verify(out).write("OK".getBytes());
+    }
+
+    @Test(expected = WebsterException.class)
+    public void testRequiredParameterNotSet() throws Exception {
+        ServletOutputStream out = mock(ServletOutputStream.class);
+
+        app.get(path, TestParameterizedHandler.class);
+        when(request.getMethod()).thenReturn("GET");
+        when(request.getRequestURI()).thenReturn(path);
+        when(request.getContextPath()).thenReturn("");
+        when(request.getParameterValues("requiredBoolean")).thenReturn(new String[]{""});
+        when(request.getParameterValues("requiredInt")).thenReturn(new String[]{"1"});
+        when(request.getParameterValues("testParameterObject")).thenReturn(new String[]{"testParameterObjectValue"});
+        when(request.getParameterValues("requiredStringArray[]")).thenReturn(new String[]{"requiredStringArrayValue1"});
+        when(request.getHeader("requiredStringInHeader")).thenReturn("requiredStringInHeader");
+        when(response.getOutputStream()).thenReturn(out);
+        app.handle(request, response);
+        verify(request).setAttribute("handled", "true");
+        verify(out).write("OK".getBytes());
+    }
+
+    @Test(expected = WebsterException.class)
+    public void testRequiredStringEmpty() throws Exception {
+        Handler handler = new ParameterizedHandler() {
+            @Handle
+            public String handle(@Required(name = "param", allowEmpty = false) String param) { return "should fail"; }
+        };
+        app.get(path, handler);
+        when(request.getMethod()).thenReturn("GET");
+        when(request.getRequestURI()).thenReturn(path);
+        when(request.getContextPath()).thenReturn("");
+        when(request.getParameterValues("param")).thenReturn(new String[]{"", "  "});
+        app.handle(request, response);
+    }
+
+    @Test(expected = WebsterException.class)
+    public void testOptionalStringEmpty() throws Exception {
+        Handler handler = new ParameterizedHandler() {
+            @Handle
+            public String handle(@Optional(name = "param", allowEmpty = false) String param) { return "should fail"; }
+        };
+        app.get(path, handler);
+        when(request.getMethod()).thenReturn("GET");
+        when(request.getRequestURI()).thenReturn(path);
+        when(request.getContextPath()).thenReturn("");
+        when(request.getParameterValues("param")).thenReturn(new String[] { "", "  "});
+        app.handle(request, response);
     }
 
     @Test
