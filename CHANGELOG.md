@@ -1,6 +1,6 @@
 # v2.1.1
 
-* bug fixes
+* Added the ability for Required and Optional parameter annotations to specify whether they allow blank strings. If not, they will be considered errors.
 
 # v2.1.0
 
