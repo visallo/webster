@@ -1,4 +1,4 @@
-webster
+webster [![Build Status](https://travis-ci.org/v5analytics/webster.svg?branch=master)](https://travis-ci.org/v5analytics/webster)
 ======
 
 Minimal web framework, implemented in Java, resembling [node.js](https://github.com/joyent/node)+[express](https://github.com/visionmedia/express).
