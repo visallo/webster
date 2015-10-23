@@ -388,6 +388,7 @@
     var requestPathKeyUp = function () {
       var i;
       var requestPath = document.getElementById('request-path').value;
+      var parameterName, parameterValue;
       var m = requestPath.match(/curl '(.*?)'(.*)/);
       if (m) {
         clearRequest();
@@ -399,7 +400,9 @@
           url = m[1];
           var urlParameters = parseUrlParameters(m[2]);
           for (i = 0; i < urlParameters.length; i++) {
-            addUrlParameter(urlParameters[i][0], urlParameters[i][1] || '');
+            parameterName = urlParameters[i][0].replace(/\\/g, '');
+            parameterValue = (urlParameters[i][1] || '').replace(/\\/g, '');
+            addUrlParameter(parameterName, parameterValue);
           }
         }
         document.getElementById('request-path').value = url;
@@ -410,8 +413,8 @@
             i++;
             var header = stripQuotes(parameters[i]);
             if (m = header.match(/(.*?):(.*)/)) {
-              var parameterName = m[1].trim();
-              var parameterValue = m[2].trim();
+              parameterName = m[1].trim();
+              parameterValue = m[2].trim();
               if (ignoredCurlParameters.indexOf(parameterName.toLowerCase()) >= 0) {
                 continue;
               }
@@ -422,7 +425,9 @@
             method = 'POST';
             var postData = parseUrlParameters(stripQuotes(parameters[i]));
             for (var postDataIndex = 0; postDataIndex < postData.length; postDataIndex++) {
-              addFormParameter(postData[postDataIndex][0], postData[postDataIndex][1]);
+              parameterName = postData[postDataIndex][0].replace(/\\/g, '');
+              parameterValue = postData[postDataIndex][1].replace(/\\/g, '');
+              addFormParameter(parameterName, parameterValue);
             }
           }
         }
