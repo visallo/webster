@@ -3,11 +3,9 @@ package com.v5analytics.webster.resultWriters;
 import com.v5analytics.webster.HandlerChain;
 import com.v5analytics.webster.annotations.ContentType;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.lang.reflect.Method;
 
 public class ResultWriterBase implements ResultWriter {
@@ -40,13 +38,11 @@ public class ResultWriterBase implements ResultWriter {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
-        ServletOutputStream out = response.getOutputStream();
-        writeResult(out, result);
-        out.close();
+        writeResult(response, result);
     }
 
-    protected void writeResult(OutputStream out, Object result) throws IOException {
-        out.write(getResultBytes(result));
+    protected void writeResult(HttpServletResponse response, Object result) throws IOException {
+        response.getOutputStream().write(getResultBytes(result));
     }
 
     protected byte[] getResultBytes(Object result) {
