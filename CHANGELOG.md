@@ -1,3 +1,8 @@
+# v2.1.2
+
+* Router Runner: fix character escaping of curl pasting
+* provide HttpServletResponse to overriding subclasses 
+
 # v2.1.1
 
 * Added the ability for Required and Optional parameter annotations to specify whether they allow blank strings. If not, they will be considered errors.
