@@ -135,7 +135,7 @@ public class App {
             if (ACCESS_LOGGER.isDebugEnabled()) {
                 long endTime = System.currentTimeMillis();
                 long timeMs = endTime - startTime;
-                ACCESS_LOGGER.debug(request.getMethod() + " " + request.getRequestURI() + " " + timems + "ms");
+                ACCESS_LOGGER.debug(request.getMethod() + " " + request.getRequestURI() + " " + timeMs + "ms");
             }
         }
     }
