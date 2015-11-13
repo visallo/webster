@@ -1,3 +1,7 @@
+# v2.1.3
+
+* change access logging to use `com.v5analytics.webster.App.ACCESS_LOG` at `DEBUG` level to allow granular control over access logging
+
 # v2.1.2
 
 * Router Runner: fix character escaping of curl pasting

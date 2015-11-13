@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class App {
-    private static final Logger LOGGER = LoggerFactory.getLogger(App.class);
+    private static final Logger ACCESS_LOGGER = LoggerFactory.getLogger(App.class.getName() + ".ACCESS_LOG");
     public static final String WEBSTER_APP_ATTRIBUTE_NAME = "websterApp";
     private static final ResultWriterFactory DEFAULT_RESULT_WRITER_FACTORY = new DefaultResultWriterFactory();
     private Router router;
@@ -127,15 +127,15 @@ public class App {
     }
 
     public void handle(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        long startTime = System.nanoTime();
+        long startTime = System.currentTimeMillis();
         try {
             request.setAttribute(WEBSTER_APP_ATTRIBUTE_NAME, this);
             router.route(request, response);
         } finally {
-            if (LOGGER.isDebugEnabled()) {
-                long endTime = System.nanoTime();
-                long timems = (endTime - startTime) / 1000 / 1000;
-                LOGGER.debug(request.getMethod() + " " + request.getRequestURI() + " " + timems + "ms");
+            if (ACCESS_LOGGER.isDebugEnabled()) {
+                long endTime = System.currentTimeMillis();
+                long timeMs = endTime - startTime;
+                ACCESS_LOGGER.debug(request.getMethod() + " " + request.getRequestURI() + " " + timems + "ms");
             }
         }
     }
