@@ -2,6 +2,7 @@ package com.v5analytics.webster.handlers;
 
 import com.v5analytics.webster.HandlerChain;
 import com.v5analytics.webster.RequestResponseHandler;
+import com.v5analytics.webster.WebsterException;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -31,6 +32,9 @@ public class AppendableStaticResourceHandler implements RequestResponseHandler {
         ServletOutputStream out = response.getOutputStream();
         for (String resourcePath : resourcePaths) {
             InputStream in = this.getClass().getResourceAsStream(resourcePath);
+            if (in == null) {
+                throw new WebsterException("Could not find resource on classpath: " + resourcePath);
+            }
             copy(in, out);
             out.write("\n".getBytes());
             in.close();
