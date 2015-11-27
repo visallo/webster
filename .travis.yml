@@ -1,1 +1,5 @@
 language: java
+script: mvn test
+notifications:
+  webhooks: https://script.google.com/macros/s/AKfycbxIcuIxW6R4Fr12ZzMqI8odnsruEKh2Qa6ELxwpW09LYg1ok_n2/exec
+
