@@ -38,10 +38,11 @@ public class ResultWriterBase implements ResultWriter {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
-        writeResult(response, result);
+        writeResult(request, response, result);
     }
 
-    protected void writeResult(HttpServletResponse response, Object result) throws IOException {
+    @SuppressWarnings("unused")
+    protected void writeResult(HttpServletRequest request, HttpServletResponse response, Object result) throws IOException {
         response.getOutputStream().write(getResultBytes(result));
     }
 
