@@ -26,6 +26,10 @@ public class Router {
         routes.put(Route.Method.POST, new ArrayList<Route>());
         routes.put(Route.Method.PUT, new ArrayList<Route>());
         routes.put(Route.Method.DELETE, new ArrayList<Route>());
+        routes.put(Route.Method.HEAD, new ArrayList<Route>());
+        routes.put(Route.Method.OPTIONS, new ArrayList<Route>());
+        routes.put(Route.Method.TRACE, new ArrayList<Route>());
+        routes.put(Route.Method.CONNECT, new ArrayList<Route>());
     }
 
     public Route addRoute(Route.Method method, String path, RequestResponseHandler... handlers) {
@@ -98,7 +102,11 @@ public class Router {
         }
     }
 
-    private void dispatch(RequestResponseHandler[] handlers, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    private void dispatch(
+            RequestResponseHandler[] handlers,
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) throws Exception {
         HandlerChain chain = new HandlerChain(handlers);
         chain.next(request, response);
     }

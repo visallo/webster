@@ -77,6 +77,58 @@ public class App {
         }
     }
 
+    public void head(String path, Handler... handlers) {
+        router.addRoute(Route.Method.HEAD, path, wrapNonRequestResponseHandlers(handlers));
+    }
+
+    public void head(String path, Class<? extends Handler>... classes) {
+        try {
+            Handler[] handlers = instantiateHandlers(classes);
+            head(path, handlers);
+        } catch (Exception e) {
+            throw new WebsterException("Could not execute head method on path " + path, e);
+        }
+    }
+
+    public void options(String path, Handler... handlers) {
+        router.addRoute(Route.Method.OPTIONS, path, wrapNonRequestResponseHandlers(handlers));
+    }
+
+    public void options(String path, Class<? extends Handler>... classes) {
+        try {
+            Handler[] handlers = instantiateHandlers(classes);
+            options(path, handlers);
+        } catch (Exception e) {
+            throw new WebsterException("Could not execute options method on path " + path, e);
+        }
+    }
+
+    public void trace(String path, Handler... handlers) {
+        router.addRoute(Route.Method.TRACE, path, wrapNonRequestResponseHandlers(handlers));
+    }
+
+    public void trace(String path, Class<? extends Handler>... classes) {
+        try {
+            Handler[] handlers = instantiateHandlers(classes);
+            trace(path, handlers);
+        } catch (Exception e) {
+            throw new WebsterException("Could not execute trace method on path " + path, e);
+        }
+    }
+
+    public void connect(String path, Handler... handlers) {
+        router.addRoute(Route.Method.CONNECT, path, wrapNonRequestResponseHandlers(handlers));
+    }
+
+    public void connect(String path, Class<? extends Handler>... classes) {
+        try {
+            Handler[] handlers = instantiateHandlers(classes);
+            connect(path, handlers);
+        } catch (Exception e) {
+            throw new WebsterException("Could not execute connect method on path " + path, e);
+        }
+    }
+
     public void onException(Class<? extends Exception> exceptionClass, Handler... handlers) {
         router.addExceptionHandler(exceptionClass, wrapNonRequestResponseHandlers(handlers));
     }
@@ -154,7 +206,10 @@ public class App {
             if (handlers[i] instanceof RequestResponseHandler) {
                 results[i] = (RequestResponseHandler) handlers[i];
             } else if (handlers[i] instanceof ParameterizedHandler) {
-                results[i] = new RequestResponseHandlerParameterizedHandlerWrapper(this, (ParameterizedHandler) handlers[i]);
+                results[i] = new RequestResponseHandlerParameterizedHandlerWrapper(
+                        this,
+                        (ParameterizedHandler) handlers[i]
+                );
             } else {
                 throw new WebsterException("Unhandled handler type: " + handlers[i].getClass().getName());
             }
@@ -166,7 +221,10 @@ public class App {
         RequestResponseHandlerParameterizedHandlerWrapper.registeredParameterProviderFactory(parameterProviderFactory);
     }
 
-    public static <T> void registerParameterValueConverter(Class<T> clazz, DefaultParameterValueConverter.Converter<T> converter) {
+    public static <T> void registerParameterValueConverter(
+            Class<T> clazz,
+            DefaultParameterValueConverter.Converter<T> converter
+    ) {
         DefaultParameterValueConverter.registerValueConverter(clazz, converter);
     }
 
