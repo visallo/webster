@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 public class Route {
     public static final String MATCHED_ROUTE = "websterMatchedRoute";
 
-    public enum Method {GET, POST, PUT, DELETE}
+    public enum Method {GET, POST, PUT, DELETE, HEAD, OPTIONS, TRACE, CONNECT}
 
     private static final char[] REGEX_SPECIAL_CHARS = new char[]{
             '\\', '^', '$', '.', '|', '?', '*', '+', '(', ')', '[', ']', '{', '}'

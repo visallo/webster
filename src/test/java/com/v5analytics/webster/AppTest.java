@@ -32,12 +32,19 @@ public class AppTest {
     @Before
     public void before() {
         App.registeredParameterProviderFactory(new TestUserParameterProviderFactory());
-        App.registerParameterValueConverter(TestParameterObject.class, new DefaultParameterValueConverter.SingleValueConverter<TestParameterObject>() {
-            @Override
-            public TestParameterObject convert(Class parameterType, String parameterName, String value) {
-                return TestParameterObjectExtended.parse(value);
-            }
-        });
+        App.registerParameterValueConverter(
+                TestParameterObject.class,
+                new DefaultParameterValueConverter.SingleValueConverter<TestParameterObject>() {
+                    @Override
+                    public TestParameterObject convert(
+                            Class parameterType,
+                            String parameterName,
+                            String value
+                    ) {
+                        return TestParameterObjectExtended.parse(value);
+                    }
+                }
+        );
         handler = mock(RequestResponseHandler.class);
         request = mock(HttpServletRequest.class);
         response = mock(HttpServletResponse.class);
@@ -104,7 +111,10 @@ public class AppTest {
         verify(request).setAttribute("optionalIntegerWithDefault", 42);
         verify(request).setAttribute("requiredString", "requiredValue");
         verify(request).setAttribute("optionalStringWithDefault", "default value");
-        verify(request).setAttribute("testParameterObject", new TestParameterObjectExtended("testParameterObjectValue"));
+        verify(request).setAttribute(
+                "testParameterObject",
+                new TestParameterObjectExtended("testParameterObjectValue")
+        );
         verify(request).setAttribute("requiredStringArray", new String[]{"requiredStringArrayValue1"});
         verify(request).setAttribute("optionalStringArray", null);
         verify(request).setAttribute("requiredStringInHeader", "requiredStringInHeader");
@@ -135,7 +145,9 @@ public class AppTest {
     public void testRequiredStringEmpty() throws Exception {
         Handler handler = new ParameterizedHandler() {
             @Handle
-            public String handle(@Required(name = "param", allowEmpty = false) String param) { return "should fail"; }
+            public String handle(@Required(name = "param", allowEmpty = false) String param) {
+                return "should fail";
+            }
         };
         app.get(path, handler);
         when(request.getMethod()).thenReturn("GET");
@@ -149,13 +161,15 @@ public class AppTest {
     public void testOptionalStringEmpty() throws Exception {
         Handler handler = new ParameterizedHandler() {
             @Handle
-            public String handle(@Optional(name = "param", allowEmpty = false) String param) { return "should fail"; }
+            public String handle(@Optional(name = "param", allowEmpty = false) String param) {
+                return "should fail";
+            }
         };
         app.get(path, handler);
         when(request.getMethod()).thenReturn("GET");
         when(request.getRequestURI()).thenReturn(path);
         when(request.getContextPath()).thenReturn("");
-        when(request.getParameterValues("param")).thenReturn(new String[] { "", "  "});
+        when(request.getParameterValues("param")).thenReturn(new String[]{"", "  "});
         app.handle(request, response);
     }
 
@@ -174,7 +188,11 @@ public class AppTest {
     public void testCaughtExceptionInHandler() throws Exception {
         handler = new RequestResponseHandler() {
             @Override
-            public void handle(HttpServletRequest request, HttpServletResponse response, HandlerChain chain) throws Exception {
+            public void handle(
+                    HttpServletRequest request,
+                    HttpServletResponse response,
+                    HandlerChain chain
+            ) throws Exception {
                 throw new ArrayStoreException("boom");
             }
         };
@@ -190,7 +208,11 @@ public class AppTest {
     public void testUnhandledExceptionInHandler() throws Exception {
         handler = new RequestResponseHandler() {
             @Override
-            public void handle(HttpServletRequest request, HttpServletResponse response, HandlerChain chain) throws Exception {
+            public void handle(
+                    HttpServletRequest request,
+                    HttpServletResponse response,
+                    HandlerChain chain
+            ) throws Exception {
                 throw new Exception("boom");
             }
         };
@@ -199,16 +221,6 @@ public class AppTest {
         when(request.getRequestURI()).thenReturn(path);
         when(request.getContextPath()).thenReturn("");
         app.handle(request, response);
-    }
-
-    @Test
-    public void testRouteSetupByClass() throws Exception {
-        app.delete(path, TestRequestResponseHandler.class);
-        when(request.getMethod()).thenReturn("DELETE");
-        when(request.getRequestURI()).thenReturn(path);
-        when(request.getContextPath()).thenReturn("");
-        app.handle(request, response);
-        verify(request).setAttribute("handled", "true");
     }
 
     @Test
@@ -230,5 +242,61 @@ public class AppTest {
         when(request.getContextPath()).thenReturn("");
         app.handle(request, response);
         verify(request, times(2)).setAttribute("handled", "true");
+    }
+
+    @Test
+    public void testGET() throws Exception {
+        app.get(path, TestRequestResponseHandler.class);
+        testMethod("GET");
+    }
+
+    @Test
+    public void testPOST() throws Exception {
+        app.post(path, TestRequestResponseHandler.class);
+        testMethod("POST");
+    }
+
+    @Test
+    public void testPUT() throws Exception {
+        app.put(path, TestRequestResponseHandler.class);
+        testMethod("PUT");
+    }
+
+    @Test
+    public void testDELETE() throws Exception {
+        app.delete(path, TestRequestResponseHandler.class);
+        testMethod("DELETE");
+    }
+
+    @Test
+    public void testHEAD() throws Exception {
+        app.head(path, TestRequestResponseHandler.class);
+        testMethod("HEAD");
+    }
+
+    @Test
+    public void testOPTIONS() throws Exception {
+        app.options(path, TestRequestResponseHandler.class);
+        testMethod("OPTIONS");
+    }
+
+    @Test
+    public void testTRACE() throws Exception {
+        app.trace(path, TestRequestResponseHandler.class);
+        testMethod("TRACE");
+    }
+
+    @Test
+    public void testCONNECT() throws Exception {
+        app.connect(path, TestRequestResponseHandler.class);
+        testMethod("CONNECT");
+    }
+
+    private void testMethod(String method) throws Exception {
+        when(request.getMethod()).thenReturn(method);
+        when(request.getRequestURI()).thenReturn(path);
+        when(request.getContextPath()).thenReturn("");
+        app.handle(request, response);
+        verify(request).setAttribute("handled", "true");
     }
 }
