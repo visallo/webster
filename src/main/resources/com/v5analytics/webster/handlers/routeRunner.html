@@ -276,7 +276,7 @@
             };
             img.src = window.URL.createObjectURL(blob);
             document.getElementById('response-img').appendChild(img);
-            document.getElementById('response-text').innerText = '';
+            document.getElementById('response-text').innerHTML = '';
           } else {
             var myReader = new FileReader();
             myReader.addEventListener("loadend", function (e) {
@@ -287,7 +287,7 @@
                 // guess it's not json
               }
               document.getElementById('response-img').innerHTML = '';
-              document.getElementById('response-text').innerText = responseText;
+              document.getElementById('response-text').innerHTML = responseText;
             });
             myReader.readAsText(blob);
           }
@@ -346,7 +346,7 @@
           continue;
         }
         var show = filter.length == 0;
-        if (child.innerText.toLowerCase().indexOf(filter) >= 0) {
+        if (child.innerHTML.toLowerCase().indexOf(filter) >= 0) {
           show = true;
         }
         var style = child.getAttribute("style") || '';
