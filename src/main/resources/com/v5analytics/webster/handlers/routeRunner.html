@@ -283,7 +283,8 @@
           } else {
             var myReader = new FileReader();
             myReader.addEventListener("loadend", function (e) {
-              var responseText = e.srcElement.result;
+              var caller = e.target || e.srcElement;
+              var responseText = caller.result;
               try {
                 responseText = JSON.stringify(JSON.parse(responseText), null, 2);
               } catch (e) {
