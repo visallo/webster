@@ -1,3 +1,9 @@
+# v2.2.1
+
+* add additional HTTP methods HEAD, OPTIONS, TRACE, CONNECT
+* Fix: route runner on older versions of Firefox that do not support innerText
+* Fix: FF event target/srcElement
+
 # v2.2.0
 
 * change access logging to use `com.v5analytics.webster.App.ACCESS_LOG` at `DEBUG` level to allow granular control over access logging
