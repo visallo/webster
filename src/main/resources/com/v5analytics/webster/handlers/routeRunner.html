@@ -256,6 +256,13 @@
 
     var sendRequest = function () {
       console.log('sending request');
+      document.getElementById('response-time').innerHTML = '';
+      document.getElementById('response-status').innerHTML = '';
+      document.getElementById('response-contentType').innerHTML = '';
+      document.getElementById('response-img').innerHTML = '';
+      document.getElementById('response-text').innerHTML = 'Loading...';
+
+      var startTime = new Date().getTime();
       var httpRequest;
       if (window.XMLHttpRequest) { // Mozilla, Safari, IE7+ ...
         httpRequest = new XMLHttpRequest();
@@ -266,6 +273,9 @@
       var requestPath = document.getElementById('request-path').value;
       httpRequest.onreadystatechange = function () {
         if (httpRequest.readyState == 4) {
+          var endTime = new Date().getTime();
+          document.getElementById('response-time').innerHTML = (endTime - startTime) + 'ms';
+
           document.getElementById('response-status').innerHTML = httpRequest.status;
 
           var contentType = httpRequest.getResponseHeader('content-type');
@@ -493,6 +503,7 @@
     </form>
     <hr/>
     <div id="response">
+      <div id="response-time"></div>
       <div id="response-status"></div>
       <div id="response-contentType"></div>
       <div id="response-img"></div>
