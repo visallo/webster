@@ -122,4 +122,8 @@ public class Router {
     public void setMissingRouteHandler(RequestResponseHandler missingRouteHandler) {
         this.missingRouteHandler = missingRouteHandler;
     }
+
+    public RequestResponseHandler getMissingRouteHandler() {
+        return missingRouteHandler;
+    }
 }
