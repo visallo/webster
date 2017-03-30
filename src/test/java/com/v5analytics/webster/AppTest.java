@@ -8,14 +8,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -25,9 +23,9 @@ public class AppTest {
     private RequestResponseHandler handler;
     private HttpServletRequest request;
     private HttpServletResponse response;
-    private RequestDispatcher requestDispatcher;
     private ServletContext servletContext;
     private App app;
+    private RequestResponseHandler missingRouteHandler;
 
     @Before
     public void before() {
@@ -48,9 +46,10 @@ public class AppTest {
         handler = mock(RequestResponseHandler.class);
         request = mock(HttpServletRequest.class);
         response = mock(HttpServletResponse.class);
-        requestDispatcher = mock(RequestDispatcher.class);
         servletContext = mock(ServletContext.class);
         app = new App(servletContext);
+        missingRouteHandler = mock(RequestResponseHandler.class);
+        app.getRouter().setMissingRouteHandler(missingRouteHandler);
         when(request.getAttribute(App.WEBSTER_APP_ATTRIBUTE_NAME)).thenReturn(app);
     }
 
@@ -179,9 +178,8 @@ public class AppTest {
         when(request.getMethod()).thenReturn("POST");
         when(request.getRequestURI()).thenReturn(path);
         when(request.getContextPath()).thenReturn("");
-        when(servletContext.getNamedDispatcher(anyString())).thenReturn(requestDispatcher);
         app.handle(request, response);
-        verify(requestDispatcher).forward(any(HttpServletRequest.class), any(HttpServletResponse.class));
+        verify(missingRouteHandler).handle(eq(request), eq(response), any(HandlerChain.class));
     }
 
     @Test

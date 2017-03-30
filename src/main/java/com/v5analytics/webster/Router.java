@@ -1,12 +1,11 @@
 package com.v5analytics.webster;
 
+import com.v5analytics.webster.handlers.StaticFileHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,10 +17,14 @@ public class Router {
 
     private ServletContext servletContext;
     private Map<Route.Method, List<Route>> routes = new HashMap<Route.Method, List<Route>>();
+    private HandlerChain missingRouteHandlerChain = new HandlerChain(new RequestResponseHandler[0]);
+    private RequestResponseHandler missingRouteHandler;
+
     Map<Class<? extends Exception>, RequestResponseHandler[]> exceptionHandlers = new HashMap<>();
 
     public Router(ServletContext servletContext) {
         this.servletContext = servletContext;
+        this.missingRouteHandler = new StaticFileHandler(servletContext);
         routes.put(Route.Method.GET, new ArrayList<Route>());
         routes.put(Route.Method.POST, new ArrayList<Route>());
         routes.put(Route.Method.PUT, new ArrayList<Route>());
@@ -86,16 +89,7 @@ public class Router {
         Route route = findRoute(method, request, relativeUri);
 
         if (route == null) {
-            RequestDispatcher rd = servletContext.getNamedDispatcher("default");
-            if (rd == null) {
-                throw new WebsterException("Could not get named dispatcher 'default'");
-            }
-            HttpServletRequest wrapped = new HttpServletRequestWrapper(request) {
-                public String getServletPath() {
-                    return "";
-                }
-            };
-            rd.forward(wrapped, response);
+            missingRouteHandler.handle(request, response, missingRouteHandlerChain);
         } else {
             RequestResponseHandler[] handlers = route.getHandlers();
             dispatch(handlers, request, response);
@@ -123,5 +117,9 @@ public class Router {
 
     public Map<Route.Method, List<Route>> getRoutes() {
         return routes;
+    }
+
+    public void setMissingRouteHandler(RequestResponseHandler missingRouteHandler) {
+        this.missingRouteHandler = missingRouteHandler;
     }
 }

@@ -1,3 +1,7 @@
+# v2.3.0
+
+* add ability to set the file handler used when no routes are matched
+
 # v2.2.1
 
 * add additional HTTP methods HEAD, OPTIONS, TRACE, CONNECT
