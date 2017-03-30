@@ -1,11 +1,12 @@
-webster [![Build Status](https://travis-ci.org/v5analytics/webster.svg?branch=master)](https://travis-ci.org/v5analytics/webster)
+webster [![Build Status](https://travis-ci.org/visallo/webster.svg?branch=master)](https://travis-ci.org/visallo/webster)
 ======
 
 Minimal web framework, implemented in Java, resembling [node.js](https://github.com/joyent/node)+[express](https://github.com/visionmedia/express).
 
 License
 -------
-Copyright 2015 V5 Analytics LLC<br>
+Copyright 2017 Visallo, LLC<br>
+Copyright 2015 V5 Analytics, LLC<br>
 Copyright 2013 Altamira Technologies Corporation
 
 Licensed under the Apache License, Version 2.0 (the "License");

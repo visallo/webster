@@ -5,7 +5,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,19 +18,19 @@ public class RouterTest {
     private RequestResponseHandler exceptionThrowingHandler;
     private HttpServletRequest request;
     private HttpServletResponse response;
-    private RequestDispatcher requestDispatcher;
-    private ServletContext servletContext;
+    private RequestResponseHandler missingRouteHandler;
     private String path = "/foo";
 
     @Before
     public void before() {
-        servletContext = mock(ServletContext.class);
+        ServletContext servletContext = mock(ServletContext.class);
         router = new Router(servletContext);
         handler = mock(RequestResponseHandler.class);
         exceptionThrowingHandler = mock(RequestResponseHandler.class);
         request = mock(HttpServletRequest.class);
         response = mock(HttpServletResponse.class);
-        requestDispatcher = mock(RequestDispatcher.class);
+        missingRouteHandler = mock(RequestResponseHandler.class);
+        router.setMissingRouteHandler(missingRouteHandler);
     }
 
     @Test
@@ -88,9 +87,8 @@ public class RouterTest {
         router.addRoute(Route.Method.GET, path, handler);
         when(request.getMethod()).thenReturn(Route.Method.POST.toString());
         when(request.getRequestURI()).thenReturn(path);
-        when(servletContext.getNamedDispatcher(anyString())).thenReturn(requestDispatcher);
         router.route(request, response);
-        verify(requestDispatcher).forward(any(HttpServletRequest.class), any(HttpServletResponse.class));
+        verify(missingRouteHandler).handle(eq(request), eq(response), any(HandlerChain.class));
     }
 
     @Test
@@ -99,9 +97,8 @@ public class RouterTest {
         when(request.getMethod()).thenReturn(Route.Method.GET.toString());
         when(request.getRequestURI()).thenReturn(path + "extra");
         when(request.getContextPath()).thenReturn("");
-        when(servletContext.getNamedDispatcher(anyString())).thenReturn(requestDispatcher);
         router.route(request, response);
-        verify(requestDispatcher).forward(any(HttpServletRequest.class), any(HttpServletResponse.class));
+        verify(missingRouteHandler).handle(eq(request), eq(response), any(HandlerChain.class));
     }
 
     @Test
