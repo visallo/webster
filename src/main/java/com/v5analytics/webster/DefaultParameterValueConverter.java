@@ -1,5 +1,6 @@
 package com.v5analytics.webster;
 
+import java.lang.reflect.Array;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,14 +10,19 @@ public class DefaultParameterValueConverter implements ParameterValueConverter {
     static {
         registerValueConverter(Boolean.class, new BooleanConverter());
         registerValueConverter(Boolean.TYPE, new BooleanConverter());
+        registerValueConverter(Boolean[].class, new BooleanArrayConverter());
         registerValueConverter(Integer.class, new IntegerConverter());
         registerValueConverter(Integer.TYPE, new IntegerConverter());
+        registerValueConverter(Integer[].class, new IntegerArrayConverter());
         registerValueConverter(Long.class, new LongConverter());
         registerValueConverter(Long.TYPE, new LongConverter());
+        registerValueConverter(Long[].class, new LongArrayConverter());
         registerValueConverter(Double.class, new DoubleConverter());
         registerValueConverter(Double.TYPE, new DoubleConverter());
+        registerValueConverter(Double[].class, new DoubleArrayConverter());
         registerValueConverter(Float.class, new FloatConverter());
         registerValueConverter(Float.TYPE, new FloatConverter());
+        registerValueConverter(Float[].class, new FloatArrayConverter());
         registerValueConverter(String.class, new StringConverter());
         registerValueConverter(String[].class, new StringArrayConverter());
     }
@@ -86,6 +92,39 @@ public class DefaultParameterValueConverter implements ParameterValueConverter {
         public abstract T convert(Class parameterType, String parameterName, String value);
     }
 
+    public abstract static class ArrayValueConverter<T> implements Converter<T[]> {
+        private final Class<T> convertedType;
+
+        public ArrayValueConverter(Class<T> convertedType) {
+            this.convertedType = convertedType;
+        }
+
+        @Override
+        public T[] convert(Class parameterType, String parameterName, String[] value) {
+            if (value == null || value.length == 0) {
+                return null;
+            }
+
+            @SuppressWarnings("unchecked")
+            T[] result = (T[]) Array.newInstance(convertedType, value.length);
+
+            for (int i = 0; i < value.length; i++) {
+                if (value[i] == null || value[i].trim().length() == 0) {
+                    result[i] = convertNullOrEmpty(parameterType, parameterName, value[i]);
+                } else {
+                    result[i] = convert(parameterType, parameterName, value[i]);
+                }
+            }
+            return result;
+        }
+
+        public T convertNullOrEmpty(Class parameterType, String parameterName, String rawValue) {
+            return null;
+        }
+
+        public abstract T convert(Class parameterType, String parameterName, String rawValue);
+    }
+
     public static class BooleanConverter extends SingleValueConverter<Boolean> {
         @Override
         public Boolean convert(Class parameterType, String parameterName, String value) {
@@ -143,10 +182,77 @@ public class DefaultParameterValueConverter implements ParameterValueConverter {
         }
     }
 
-    public static class StringArrayConverter implements Converter<String[]> {
+    public static class StringArrayConverter extends ArrayValueConverter<String> {
+        public StringArrayConverter() {
+            super(String.class);
+        }
+
         @Override
-        public String[] convert(Class parameterType, String parameterName, String[] value) {
+        public String convert(Class parameterType, String parameterName, String value) {
             return value;
+        }
+    }
+
+    public static class BooleanArrayConverter extends ArrayValueConverter<Boolean> {
+        public BooleanArrayConverter() {
+            super(Boolean.class);
+        }
+
+        @Override
+        public Boolean convertNullOrEmpty(Class parameterType, String parameterName, String value) {
+            if (value == null) {
+                return null;
+            }
+            return true;
+        }
+
+        @Override
+        public Boolean convert(Class parameterType, String parameterName, String value) {
+            return Boolean.parseBoolean(value);
+        }
+    }
+
+    public static class IntegerArrayConverter extends ArrayValueConverter<Integer> {
+        public IntegerArrayConverter() {
+            super(Integer.class);
+        }
+
+        @Override
+        public Integer convert(Class parameterType, String parameterName, String value) {
+            return Integer.parseInt(value);
+        }
+    }
+
+    public static class LongArrayConverter extends ArrayValueConverter<Long> {
+        public LongArrayConverter() {
+            super(Long.class);
+        }
+
+        @Override
+        public Long convert(Class parameterType, String parameterName, String value) {
+            return Long.parseLong(value);
+        }
+    }
+
+    public static class FloatArrayConverter extends ArrayValueConverter<Float> {
+        public FloatArrayConverter() {
+            super(Float.class);
+        }
+
+        @Override
+        public Float convert(Class parameterType, String parameterName, String value) {
+            return Float.parseFloat(value);
+        }
+    }
+
+    public static class DoubleArrayConverter extends ArrayValueConverter<Double> {
+        public DoubleArrayConverter() {
+            super(Double.class);
+        }
+
+        @Override
+        public Double convert(Class parameterType, String parameterName, String value) {
+            return Double.parseDouble(value);
         }
     }
 }
