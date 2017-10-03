@@ -27,6 +27,8 @@ public class TestParameterizedHandler implements ParameterizedHandler {
             @Optional(name = "optionalStringArray[]") String[] optionalStringArray,
             @Required(name = "testParameterObject") TestParameterObjectExtended testParameterObject,
             @Required(name = "requiredStringInHeader") String requiredStringInHeader,
+            @Required(name = "requiredBooleanArray[]") Boolean[] requiredBooleanArray,
+            @Required(name = "requiredIntegerArray[]") Integer[] requiredIntegerArray,
             TestUser user
     ) {
         request.setAttribute("handled", "true");
@@ -42,6 +44,8 @@ public class TestParameterizedHandler implements ParameterizedHandler {
         request.setAttribute("requiredStringArray", requiredStringArray);
         request.setAttribute("optionalStringArray", optionalStringArray);
         request.setAttribute("requiredStringInHeader", requiredStringInHeader);
+        request.setAttribute("requiredBooleanArray", requiredBooleanArray);
+        request.setAttribute("requiredIntegerArray", requiredIntegerArray);
         request.setAttribute("user", user);
 
         return "OK";

@@ -77,6 +77,8 @@ public class AppTest {
         when(request.getParameterValues("testParameterObject")).thenReturn(new String[]{"testParameterObjectValue"});
         when(request.getParameterValues("requiredStringArray[]")).thenReturn(new String[]{"requiredStringArrayValue1"});
         when(request.getHeader("requiredStringInHeader")).thenReturn("requiredStringInHeader");
+        when(request.getParameterValues("requiredIntegerArray[]")).thenReturn(new String[]{"0", "42", ""});
+        when(request.getParameterValues("requiredBooleanArray[]")).thenReturn(new String[]{"true", "false", "", null});
         when(response.getOutputStream()).thenReturn(out);
         app.handle(request, response);
         verify(request).setAttribute("handled", "true");
@@ -99,6 +101,8 @@ public class AppTest {
         when(request.getParameterValues("testParameterObject")).thenReturn(new String[]{"testParameterObjectValue"});
         when(request.getParameterValues("requiredStringArray[]")).thenReturn(new String[]{"requiredStringArrayValue1"});
         when(request.getHeader("requiredStringInHeader")).thenReturn("requiredStringInHeader");
+        when(request.getParameterValues("requiredIntegerArray[]")).thenReturn(new String[]{"0", "42", ""});
+        when(request.getParameterValues("requiredBooleanArray[]")).thenReturn(new String[]{"true", "false", "", null});
         when(response.getOutputStream()).thenReturn(out);
         app.handle(request, response);
         verify(request).setAttribute("handled", "true");
@@ -117,6 +121,8 @@ public class AppTest {
         verify(request).setAttribute("requiredStringArray", new String[]{"requiredStringArrayValue1"});
         verify(request).setAttribute("optionalStringArray", null);
         verify(request).setAttribute("requiredStringInHeader", "requiredStringInHeader");
+        verify(request).setAttribute("requiredBooleanArray", new Boolean[]{ true, false, true, null });
+        verify(request).setAttribute("requiredIntegerArray", new Integer[]{ 0, 42, null });
         verify(request).setAttribute("user", new TestUser("userA"));
         verify(out).write("OK".getBytes());
     }
