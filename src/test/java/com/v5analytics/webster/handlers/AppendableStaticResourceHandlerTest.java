@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -61,6 +62,7 @@ public class AppendableStaticResourceHandlerTest {
 
     private class CapturingServletOutputStream extends ServletOutputStream {
         private List bytes = new ArrayList<Integer>();
+        private WriteListener writeListener;
 
         @Override
         public void write(int b) throws IOException {
@@ -74,6 +76,16 @@ public class AppendableStaticResourceHandlerTest {
                 strBytes[i] = (byte) ((Integer) bytes.get(i)).intValue();
             }
             return new String(strBytes);
+        }
+
+        @Override
+        public boolean isReady() {
+            return writeListener != null;
+        }
+
+        @Override
+        public void setWriteListener(WriteListener writeListener) {
+            this.writeListener = writeListener;
         }
     }
 }

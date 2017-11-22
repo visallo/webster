@@ -54,8 +54,8 @@
 
     <properties>
         <java.compiler.showWarnings>true</java.compiler.showWarnings>
-        <java.source.version>1.7</java.source.version>
-        <java.target.version>1.7</java.target.version>
+        <java.source.version>1.8</java.source.version>
+        <java.target.version>1.8</java.target.version>
 
         <maven.plugin.scm.version>1.8.1</maven.plugin.scm.version>
         <maven.plugin.compiler.version>3.1</maven.plugin.compiler.version>
@@ -74,8 +74,8 @@
 
         <dependency>
             <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>3.0-alpha-1</version>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.1.0</version>
             <scope>provided</scope>
         </dependency>
 
