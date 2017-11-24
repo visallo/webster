@@ -12,7 +12,7 @@
         </layout>
     </appender>
 
-    <logger name="com.v5analytics.webster" additivity="false">
+    <logger name="com.visallo.webster" additivity="false">
         <level value="DEBUG" />
         <appender-ref ref="console" />
     </logger>
