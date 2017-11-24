@@ -5,15 +5,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import org.mockito.ArgumentMatcher;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
-import static org.mockito.AdditionalMatchers.not;
-import static org.mockito.Matchers.eq;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
 @RunWith(JUnit4.class)
@@ -24,107 +24,145 @@ public class CSRFHandlerTest {
     private HttpServletResponse response;
     private HandlerChain chain;
     private CSRFHandler handler;
-    private HttpSession session;
 
     @Before
     public void setup() {
         handler = new CSRFHandler(TOKEN_PARAM, TOKEN_HEADER);
         request = mock(HttpServletRequest.class);
         response = mock(HttpServletResponse.class);
-        session = mock(HttpSession.class);
         chain = mock(HandlerChain.class);
     }
 
     @Test
     public void testGetRequestWithNoCsrfTokenPresent() throws Exception {
         when(request.getMethod()).thenReturn("GET");
-        when(request.getSession(false)).thenReturn(session);
-        when(session.getAttribute(CSRFHandler.CSRF_TOKEN_ATTR)).thenReturn(generateToken());
+        when(request.getCookies()).thenReturn(new Cookie[] { generateTokenCookie() });
         handler.handle(request, response, chain);
         verify(chain).next(request, response);
     }
 
-    @Test(expected = CSRFHandler.TokenException.class)
+    @Test
     public void testGetRequestWithCsrfPresent() throws Exception {
-        String token = generateToken();
+        Cookie token = generateTokenCookie();
         when(request.getMethod()).thenReturn("GET");
-        when(request.getSession(false)).thenReturn(session);
-        when(request.getSession()).thenReturn(session);
-        when(session.getAttribute(CSRFHandler.CSRF_TOKEN_ATTR)).thenReturn(token);
-        when(request.getParameter(TOKEN_PARAM)).thenReturn(token);
-        handler.handle(request, response, chain);
+        when(request.getCookies()).thenReturn(new Cookie[] { token });
+        when(request.getParameter(TOKEN_PARAM)).thenReturn(token.getValue());
+        try {
+            handler.handle(request, response, chain);
+            fail("Expected " + CSRFHandler.TokenException.class.getName());
+        } catch (CSRFHandler.TokenException ex) {
+            // expected
+        }
         verify(chain, never()).next(request, response);
-        verify(session).setAttribute(eq(CSRFHandler.CSRF_TOKEN_ATTR), not(eq(token)));
+        verify(response).addCookie(argThat(new CookieMatcher(token, false)));
     }
 
-    @Test(expected = CSRFHandler.TokenException.class)
+    @Test
     public void testPostRequestWithNoCsrfTokenInRequest() throws Exception {
-        String token = generateToken();
+        Cookie token = generateTokenCookie();
         when(request.getMethod()).thenReturn("POST");
-        when(request.getSession(false)).thenReturn(session);
-        when(session.getAttribute(CSRFHandler.CSRF_TOKEN_ATTR)).thenReturn(token);
+        when(request.getCookies()).thenReturn(new Cookie[] { token });
         when(request.getParameter(TOKEN_PARAM)).thenReturn(null);
-        handler.handle(request, response, chain);
+        try {
+            handler.handle(request, response, chain);
+            fail("Expected " + CSRFHandler.TokenException.class.getName());
+        } catch (CSRFHandler.TokenException ex) {
+            // expected
+        }
         verify(chain, never()).next(request, response);
     }
 
-    @Test(expected = CSRFHandler.TokenException.class)
+    @Test
     public void testPostRequestWithNoCsrfTokenInSession() throws Exception {
-        String token = generateToken();
+        Cookie token = generateTokenCookie();
         when(request.getMethod()).thenReturn("POST");
-        when(request.getSession(false)).thenReturn(session);
-        when(session.getAttribute(CSRFHandler.CSRF_TOKEN_ATTR)).thenReturn(null);
-        when(request.getParameter(TOKEN_PARAM)).thenReturn(token);
-        handler.handle(request, response, chain);
+        when(request.getCookies()).thenReturn(null);
+        when(request.getParameter(TOKEN_PARAM)).thenReturn(token.getValue());
+        try {
+            handler.handle(request, response, chain);
+            fail("Expected " + CSRFHandler.TokenException.class.getName());
+        } catch (CSRFHandler.TokenException ex) {
+            // expected
+        }
         verify(chain, never()).next(request, response);
     }
 
-    @Test(expected = CSRFHandler.TokenException.class)
+    @Test
     public void testPostRequestWithNoCsrfTokenInSessionOrRequest() throws Exception {
         when(request.getMethod()).thenReturn("POST");
-        when(request.getSession(false)).thenReturn(session);
-        when(session.getAttribute(CSRFHandler.CSRF_TOKEN_ATTR)).thenReturn(null);
+        when(request.getCookies()).thenReturn(null);
         when(request.getParameter(TOKEN_PARAM)).thenReturn(null);
-        handler.handle(request, response, chain);
+        try {
+            handler.handle(request, response, chain);
+            fail("Expected " + CSRFHandler.TokenException.class.getName());
+        } catch (CSRFHandler.TokenException ex) {
+            // expected
+        }
         verify(chain, never()).next(request, response);
     }
 
-    @Test(expected = CSRFHandler.TokenException.class)
+    @Test
     public void testPostRequestWithNonMatchingCsrfTokens() throws Exception {
-        String token = generateToken();
+        Cookie token = generateTokenCookie();
         when(request.getMethod()).thenReturn("POST");
-        when(request.getSession(false)).thenReturn(session);
-        when(session.getAttribute(CSRFHandler.CSRF_TOKEN_ATTR)).thenReturn(token);
-        when(request.getParameter(TOKEN_PARAM)).thenReturn(token + "a");
-        handler.handle(request, response, chain);
+        when(request.getCookies()).thenReturn(new Cookie[] { token });
+        when(request.getParameter(TOKEN_PARAM)).thenReturn(token.getValue() + "a");
+        try {
+            handler.handle(request, response, chain);
+            fail("Expected " + CSRFHandler.TokenException.class.getName());
+        } catch (CSRFHandler.TokenException ex) {
+            // expected
+        }
         verify(chain, never()).next(request, response);
     }
 
     @Test
     public void testPostRequestWithMatchingCsrfTokensInParameter() throws Exception {
-        String token = generateToken();
+        Cookie token = generateTokenCookie();
         when(request.getMethod()).thenReturn("POST");
-        when(request.getSession(false)).thenReturn(session);
-        when(session.getAttribute(CSRFHandler.CSRF_TOKEN_ATTR)).thenReturn(token);
-        when(request.getHeader(TOKEN_HEADER)).thenReturn(token + "a");
-        when(request.getParameter(TOKEN_PARAM)).thenReturn(token);
+        when(request.getCookies()).thenReturn(new Cookie[] { token });
+        when(request.getHeader(TOKEN_HEADER)).thenReturn(token.getValue() + "a");
+        when(request.getParameter(TOKEN_PARAM)).thenReturn(token.getValue());
         handler.handle(request, response, chain);
         verify(chain).next(request, response);
     }
 
     @Test
     public void testPostRequestWithMatchingCsrfTokensInHeader() throws Exception {
-        String token = generateToken();
+        Cookie token = generateTokenCookie();
         when(request.getMethod()).thenReturn("POST");
-        when(request.getSession(false)).thenReturn(session);
-        when(session.getAttribute(CSRFHandler.CSRF_TOKEN_ATTR)).thenReturn(token);
+        when(request.getCookies()).thenReturn(new Cookie[] { token });
         when(request.getParameter(TOKEN_PARAM)).thenReturn(null);
-        when(request.getHeader(TOKEN_HEADER)).thenReturn(token);
+        when(request.getHeader(TOKEN_HEADER)).thenReturn(token.getValue());
         handler.handle(request, response, chain);
         verify(chain).next(request, response);
     }
 
-    private String generateToken() {
-        return new BigInteger(120, new SecureRandom()).toString(32);
+    private Cookie generateTokenCookie() {
+        String token = new BigInteger(120, new SecureRandom()).toString(32);
+        return new Cookie(CSRFHandler.CSRF_COOKIE_NAME, token);
+    }
+
+    private class CookieMatcher extends ArgumentMatcher<Cookie> {
+
+        private Cookie left;
+        private boolean shouldEqual;
+
+        public CookieMatcher(Cookie cookie, boolean shouldEqual) {
+            this.left = cookie;
+            this.shouldEqual = shouldEqual;
+        }
+
+        @Override
+        public boolean matches(Object object) {
+            if (object instanceof Cookie) {
+                Cookie right = (Cookie) object;
+                boolean equal = left.getName().equals(right.getName())
+                        && left.getValue().equals(right.getValue());
+                return shouldEqual ? equal : !equal;
+            }
+
+            return false;
+        }
     }
 }
