@@ -7,7 +7,7 @@
         <version>7</version>
     </parent>
     
-    <groupId>com.v5analytics.webster</groupId>
+    <groupId>com.visallo</groupId>
     <artifactId>webster</artifactId>
     <version>3.0.0-SNAPSHOT</version>
 
@@ -26,15 +26,15 @@
     </licenses>
 
     <scm>
-        <url>scm:git:git@github.com:v5analytics/webster.git</url>
-        <connection>scm:git:git@github.com:v5analytics/webster.git</connection>
-        <developerConnection>scm:git:git@github.com:v5analytics/webster.git</developerConnection>
+        <url>scm:git:git@github.com:visallo/webster.git</url>
+        <connection>scm:git:git@github.com:visallo/webster.git</connection>
+        <developerConnection>scm:git:git@github.com:visallo/webster.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
     <issueManagement>
         <system>GitHub Issues</system>
-        <url>https://github.com/v5analytics/webster/issues</url>
+        <url>https://github.com/visallo/webster/issues</url>
     </issueManagement>
 
     <developers>
@@ -42,13 +42,13 @@
             <name>Jeff Kunkle</name>
             <url>https://github.com/kunklejr</url>
             <timezone>-5</timezone>
-            <email>jeff.kunkle@v5analytics.com</email>
+            <email>jeff.kunkle@visallo.com</email>
         </developer>
         <developer>
             <name>Joe Ferner</name>
             <url>https://github.com/joeferner</url>
             <timezone>-5</timezone>
-            <email>joe.ferner@v5analytics.com</email>
+            <email>joe.ferner@visallo.com</email>
         </developer>
     </developers>
 
