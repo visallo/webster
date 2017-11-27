@@ -9,7 +9,7 @@
     
     <groupId>org.visallo</groupId>
     <artifactId>webster</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>3.0.0</version>
 
     <name>Webster: Minimalist Web Framework</name>
     <inceptionYear>2014</inceptionYear>
@@ -29,7 +29,7 @@
         <url>scm:git:git@github.com:visallo/webster.git</url>
         <connection>scm:git:git@github.com:visallo/webster.git</connection>
         <developerConnection>scm:git:git@github.com:visallo/webster.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>webster-3.0.0</tag>
     </scm>
 
     <issueManagement>
