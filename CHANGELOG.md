@@ -1,3 +1,10 @@
+# v3.0.0
+
+* rewrite CSRF implementation to be stateless on the server side
+* add handler to prevent use of the javax.http.HttpSession
+* repackage com.v5analytics to org.visallo
+* update servlet API specification version
+
 # v2.3.0
 
 * add ability to set the file handler used when no routes are matched
