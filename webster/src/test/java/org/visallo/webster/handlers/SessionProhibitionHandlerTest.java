@@ -1,11 +1,11 @@
 package org.visallo.webster.handlers;
 
-import org.visallo.webster.HandlerChain;
-import org.visallo.webster.RequestResponseHandler;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import org.visallo.webster.HandlerChain;
+import org.visallo.webster.RequestResponseHandler;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -65,6 +65,7 @@ public class SessionProhibitionHandlerTest {
         handler.handle(request, response, chain(nextHandler));
     }
 
+    @SuppressWarnings("deprecation")
     @Test(expected = UnsupportedOperationException.class)
     public void testIsRequestedSessionIdFromUrlIsProhibited() throws Exception {
         RequestResponseHandler nextHandler = (request, response, chain) -> {
@@ -90,6 +91,6 @@ public class SessionProhibitionHandlerTest {
     }
 
     public HandlerChain chain(RequestResponseHandler handler) {
-        return new HandlerChain(new RequestResponseHandler[] { handler });
+        return new HandlerChain(new RequestResponseHandler[]{handler});
     }
 }

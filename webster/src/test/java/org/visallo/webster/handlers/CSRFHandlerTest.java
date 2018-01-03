@@ -36,7 +36,7 @@ public class CSRFHandlerTest {
     @Test
     public void testGetRequestWithNoCsrfTokenPresent() throws Exception {
         when(request.getMethod()).thenReturn("GET");
-        when(request.getCookies()).thenReturn(new Cookie[] { generateTokenCookie() });
+        when(request.getCookies()).thenReturn(new Cookie[]{generateTokenCookie()});
         handler.handle(request, response, chain);
         verify(chain).next(request, response);
     }
@@ -45,7 +45,7 @@ public class CSRFHandlerTest {
     public void testGetRequestWithCsrfPresent() throws Exception {
         Cookie token = generateTokenCookie();
         when(request.getMethod()).thenReturn("GET");
-        when(request.getCookies()).thenReturn(new Cookie[] { token });
+        when(request.getCookies()).thenReturn(new Cookie[]{token});
         when(request.getParameter(TOKEN_PARAM)).thenReturn(token.getValue());
         try {
             handler.handle(request, response, chain);
@@ -61,7 +61,7 @@ public class CSRFHandlerTest {
     public void testPostRequestWithNoCsrfTokenInRequest() throws Exception {
         Cookie token = generateTokenCookie();
         when(request.getMethod()).thenReturn("POST");
-        when(request.getCookies()).thenReturn(new Cookie[] { token });
+        when(request.getCookies()).thenReturn(new Cookie[]{token});
         when(request.getParameter(TOKEN_PARAM)).thenReturn(null);
         try {
             handler.handle(request, response, chain);
@@ -105,7 +105,7 @@ public class CSRFHandlerTest {
     public void testPostRequestWithNonMatchingCsrfTokens() throws Exception {
         Cookie token = generateTokenCookie();
         when(request.getMethod()).thenReturn("POST");
-        when(request.getCookies()).thenReturn(new Cookie[] { token });
+        when(request.getCookies()).thenReturn(new Cookie[]{token});
         when(request.getParameter(TOKEN_PARAM)).thenReturn(token.getValue() + "a");
         try {
             handler.handle(request, response, chain);
@@ -120,7 +120,7 @@ public class CSRFHandlerTest {
     public void testPostRequestWithMatchingCsrfTokensInParameter() throws Exception {
         Cookie token = generateTokenCookie();
         when(request.getMethod()).thenReturn("POST");
-        when(request.getCookies()).thenReturn(new Cookie[] { token });
+        when(request.getCookies()).thenReturn(new Cookie[]{token});
         when(request.getHeader(TOKEN_HEADER)).thenReturn(token.getValue() + "a");
         when(request.getParameter(TOKEN_PARAM)).thenReturn(token.getValue());
         handler.handle(request, response, chain);
@@ -131,7 +131,7 @@ public class CSRFHandlerTest {
     public void testPostRequestWithMatchingCsrfTokensInHeader() throws Exception {
         Cookie token = generateTokenCookie();
         when(request.getMethod()).thenReturn("POST");
-        when(request.getCookies()).thenReturn(new Cookie[] { token });
+        when(request.getCookies()).thenReturn(new Cookie[]{token});
         when(request.getParameter(TOKEN_PARAM)).thenReturn(null);
         when(request.getHeader(TOKEN_HEADER)).thenReturn(token.getValue());
         handler.handle(request, response, chain);
@@ -143,7 +143,7 @@ public class CSRFHandlerTest {
         return new Cookie(CSRFHandler.CSRF_COOKIE_NAME, token);
     }
 
-    private class CookieMatcher extends ArgumentMatcher<Cookie> {
+    private class CookieMatcher implements ArgumentMatcher<Cookie> {
 
         private Cookie left;
         private boolean shouldEqual;
@@ -154,15 +154,10 @@ public class CSRFHandlerTest {
         }
 
         @Override
-        public boolean matches(Object object) {
-            if (object instanceof Cookie) {
-                Cookie right = (Cookie) object;
-                boolean equal = left.getName().equals(right.getName())
-                        && left.getValue().equals(right.getValue());
-                return shouldEqual ? equal : !equal;
-            }
-
-            return false;
+        public boolean matches(Cookie right) {
+            boolean equal = left.getName().equals(right.getName())
+                    && left.getValue().equals(right.getValue());
+            return shouldEqual ? equal : !equal;
         }
     }
 }

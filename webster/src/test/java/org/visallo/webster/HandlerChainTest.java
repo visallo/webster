@@ -16,9 +16,9 @@ public class HandlerChainTest {
     public void testHandlerInvocation() throws Exception {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
-        RequestResponseHandler[] handlers = { new TestRequestResponseHandler(), new TestRequestResponseHandler() };
+        RequestResponseHandler[] handlers = {new TestRequestResponseHandler(), new TestRequestResponseHandler()};
         HandlerChain chain = new HandlerChain(handlers);
         chain.next(request, response);
-        verify(request, times(2)).setAttribute(anyString(), anyObject());
+        verify(request, times(2)).setAttribute(anyString(), any());
     }
 }

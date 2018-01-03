@@ -6,12 +6,12 @@
         <artifactId>oss-parent</artifactId>
         <version>7</version>
     </parent>
-    
     <groupId>org.visallo</groupId>
-    <artifactId>webster</artifactId>
+    <artifactId>webster-parent</artifactId>
     <version>3.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
 
-    <name>Webster: Minimalist Web Framework</name>
+    <name>Webster: Minimalist Web Framework: Parent</name>
     <inceptionYear>2014</inceptionYear>
     <description>
         Minimalist web framework, that has an express.js like API.
@@ -63,53 +63,92 @@
         <maven.plugin.javadoc.version>2.9.1</maven.plugin.javadoc.version>
         <maven.plugin.release.version>2.5</maven.plugin.release.version>
         <maven.plugin.gpg.version>1.4</maven.plugin.gpg.version>
+
+        <socket-io.version>1.0.4</socket-io.version>
+
+        <!-- provided -->
+        <websocket-api.version>1.1</websocket-api.version>
+        <servlet-api.version>3.1.0</servlet-api.version>
+        <slf4j.version>1.7.5</slf4j.version>
+
+        <!-- test -->
+        <jetty.version>9.4.6.v20170531</jetty.version>
+        <junit.version>4.12</junit.version>
+        <mockito.version>2.10.0</mockito.version>
     </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.5</version>
-        </dependency>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.codeminders.socketio</groupId>
+                <artifactId>socket-io</artifactId>
+                <version>${socket-io.version}</version>
+            </dependency>
 
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>3.1.0</version>
-            <scope>provided</scope>
-        </dependency>
+            <!-- provided -->
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>${servlet-api.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>javax.websocket</groupId>
+                <artifactId>javax.websocket-api</artifactId>
+                <version>${websocket-api.version}</version>
+                <scope>provided</scope>
+            </dependency>
 
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.5</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>1.9.5</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-server</artifactId>
-            <version>9.2.0.v20140526</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-servlet</artifactId>
-            <version>9.2.0.v20140526</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+            <!-- test -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+                <version>${slf4j.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>${mockito.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-server</artifactId>
+                <version>${jetty.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-servlet</artifactId>
+                <version>${jetty.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty.websocket</groupId>
+                <artifactId>javax-websocket-server-impl</artifactId>
+                <version>${jetty.version}</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <modules>
+        <module>webster</module>
+        <module>webster-socketio</module>
+    </modules>
 
     <build>
         <plugins>
