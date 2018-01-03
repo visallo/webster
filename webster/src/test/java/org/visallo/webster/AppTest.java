@@ -1,20 +1,18 @@
 package org.visallo.webster;
 
-import org.visallo.webster.annotations.Handle;
-import org.visallo.webster.annotations.Optional;
-import org.visallo.webster.annotations.Required;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import org.visallo.webster.annotations.Handle;
+import org.visallo.webster.annotations.Optional;
+import org.visallo.webster.annotations.Required;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
 @RunWith(JUnit4.class)
@@ -121,8 +119,8 @@ public class AppTest {
         verify(request).setAttribute("requiredStringArray", new String[]{"requiredStringArrayValue1"});
         verify(request).setAttribute("optionalStringArray", null);
         verify(request).setAttribute("requiredStringInHeader", "requiredStringInHeader");
-        verify(request).setAttribute("requiredBooleanArray", new Boolean[]{ true, false, true, null });
-        verify(request).setAttribute("requiredIntegerArray", new Integer[]{ 0, 42, null });
+        verify(request).setAttribute("requiredBooleanArray", new Boolean[]{true, false, true, null});
+        verify(request).setAttribute("requiredIntegerArray", new Integer[]{0, 42, null});
         verify(request).setAttribute("user", new TestUser("userA"));
         verify(out).write("OK".getBytes());
     }
