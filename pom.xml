@@ -64,7 +64,7 @@
         <maven.plugin.release.version>2.5</maven.plugin.release.version>
         <maven.plugin.gpg.version>1.4</maven.plugin.gpg.version>
 
-        <socket-io.version>1.0.4</socket-io.version>
+        <socket-io.version>1.0.5</socket-io.version>
 
         <!-- provided -->
         <websocket-api.version>1.1</websocket-api.version>
