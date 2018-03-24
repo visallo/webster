@@ -1,6 +1,11 @@
 package org.visallo.webster;
 
+import org.visallo.webster.utils.StdDateFormat;
+
 import java.lang.reflect.Array;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,6 +30,8 @@ public class DefaultParameterValueConverter implements ParameterValueConverter {
         registerValueConverter(Float[].class, new FloatArrayConverter());
         registerValueConverter(String.class, new StringConverter());
         registerValueConverter(String[].class, new StringArrayConverter());
+        registerValueConverter(ZonedDateTime.class, new ZonedDateTimeConverter());
+        registerValueConverter(ZonedDateTime[].class, new ZonedDateTimeArrayConverter());
     }
 
     public static <T> void registerValueConverter(Class<T> clazz, Converter<T> converter) {
@@ -42,7 +49,7 @@ public class DefaultParameterValueConverter implements ParameterValueConverter {
                 return valueConverter.convert(parameterType, parameterName, value);
             }
         } catch (Exception ex) {
-            throw new WebsterException("Could not parse value \"" + toString(value) + "\" for parameter \"" + parameterName + "\"");
+            throw new WebsterException("Could not parse value \"" + toString(value) + "\" for parameter \"" + parameterName + "\"", ex);
         }
         throw new WebsterException("Inconvertible parameter type for parameter \"" + parameterName + "\"");
     }
@@ -190,6 +197,44 @@ public class DefaultParameterValueConverter implements ParameterValueConverter {
         @Override
         public String convert(Class parameterType, String parameterName, String value) {
             return value;
+        }
+    }
+
+    public static class ZonedDateTimeConverter extends SingleValueConverter<ZonedDateTime> {
+        public static ZoneId OUTPUT_ZONE = ZoneId.systemDefault();
+
+        @Override
+        public ZonedDateTime convert(Class parameterType, String parameterName, String value) {
+            return parseDate(value);
+        }
+
+        private static ZonedDateTime parseDate(String value) {
+            if (value == null || "null".equals(value)) {
+                return null;
+            }
+
+            if (value.startsWith("\"") && value.endsWith("\"")) {
+                value = value.substring(1, value.length() - 1);
+            }
+
+            try {
+                Date dateInSystemZone = StdDateFormat.instance.parse(value);
+                return ZonedDateTime.ofInstant(dateInSystemZone.toInstant(), ZoneId.systemDefault())
+                        .withZoneSameInstant(OUTPUT_ZONE);
+            } catch (Exception ex) {
+                throw new WebsterException("Could not parse date: " + value, ex);
+            }
+        }
+    }
+
+    public static class ZonedDateTimeArrayConverter extends ArrayValueConverter<ZonedDateTime> {
+        public ZonedDateTimeArrayConverter() {
+            super(ZonedDateTime.class);
+        }
+
+        @Override
+        public ZonedDateTime convert(Class parameterType, String parameterName, String value) {
+            return ZonedDateTimeConverter.parseDate(value);
         }
     }
 

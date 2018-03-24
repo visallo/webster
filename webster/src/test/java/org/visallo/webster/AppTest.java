@@ -12,6 +12,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 import static org.mockito.Mockito.*;
 
@@ -72,11 +74,13 @@ public class AppTest {
         when(request.getParameterValues("requiredBoolean")).thenReturn(new String[]{""});
         when(request.getParameterValues("requiredString")).thenReturn(new String[]{"requiredValue"});
         when(request.getParameterValues("requiredInt")).thenReturn(new String[]{"1"});
+        when(request.getParameterValues("requiredDate")).thenReturn(new String[]{"2017-08-30T14:20:03.000+0000"});
         when(request.getParameterValues("testParameterObject")).thenReturn(new String[]{"testParameterObjectValue"});
         when(request.getParameterValues("requiredStringArray[]")).thenReturn(new String[]{"requiredStringArrayValue1"});
         when(request.getHeader("requiredStringInHeader")).thenReturn("requiredStringInHeader");
         when(request.getParameterValues("requiredIntegerArray[]")).thenReturn(new String[]{"0", "42", ""});
         when(request.getParameterValues("requiredBooleanArray[]")).thenReturn(new String[]{"true", "false", "", null});
+        when(request.getParameterValues("requiredDateArray[]")).thenReturn(new String[]{"2017-03-20T14:20:03.000+0000", "2017-03-21T15:20:03.000+0000"});
         when(response.getOutputStream()).thenReturn(out);
         app.handle(request, response);
         verify(request).setAttribute("handled", "true");
@@ -87,6 +91,8 @@ public class AppTest {
     public void testParameterizedHandlerInstance() throws Exception {
         ServletOutputStream out = mock(ServletOutputStream.class);
 
+        DefaultParameterValueConverter.ZonedDateTimeConverter.OUTPUT_ZONE = ZoneId.of("GMT");
+
         ParameterizedHandler parameterizedHandler = new TestParameterizedHandler();
         app.get(path, parameterizedHandler);
         when(request.getMethod()).thenReturn("GET");
@@ -95,14 +101,18 @@ public class AppTest {
         when(request.getParameterValues("requiredBoolean")).thenReturn(new String[]{""});
         when(request.getParameterValues("requiredString")).thenReturn(new String[]{"requiredValue"});
         when(request.getParameterValues("requiredInt")).thenReturn(new String[]{"1"});
+        when(request.getParameterValues("requiredDate")).thenReturn(new String[]{"2017-08-30T14:20:03.000+0000"});
         when(request.getParameter("userId")).thenReturn("userA");
         when(request.getParameterValues("testParameterObject")).thenReturn(new String[]{"testParameterObjectValue"});
         when(request.getParameterValues("requiredStringArray[]")).thenReturn(new String[]{"requiredStringArrayValue1"});
         when(request.getHeader("requiredStringInHeader")).thenReturn("requiredStringInHeader");
         when(request.getParameterValues("requiredIntegerArray[]")).thenReturn(new String[]{"0", "42", ""});
         when(request.getParameterValues("requiredBooleanArray[]")).thenReturn(new String[]{"true", "false", "", null});
+        when(request.getParameterValues("requiredDateArray[]")).thenReturn(new String[]{"2017-08-20T14:20:03.000+0000", "2017-08-21T14:20:03.000+0000"});
         when(response.getOutputStream()).thenReturn(out);
         app.handle(request, response);
+        verify(request).setAttribute("websterApp", app);
+        verify(request).setAttribute(eq("websterMatchedRoute"), any(Route.class));
         verify(request).setAttribute("handled", "true");
         verify(request).setAttribute("requiredBoolean", true);
         verify(request).setAttribute("optionalBooleanWithDefault", false);
@@ -122,6 +132,17 @@ public class AppTest {
         verify(request).setAttribute("requiredBooleanArray", new Boolean[]{true, false, true, null});
         verify(request).setAttribute("requiredIntegerArray", new Integer[]{0, 42, null});
         verify(request).setAttribute("user", new TestUser("userA"));
+        verify(request).setAttribute(
+                "requiredDate",
+                ZonedDateTime.of(2017, 8, 30, 14, 20, 3, 0, ZoneId.of("GMT"))
+        );
+        verify(request).setAttribute(
+                "requiredDateArray",
+                new ZonedDateTime[]{
+                        ZonedDateTime.of(2017, 8, 20, 14, 20, 3, 0, ZoneId.of("GMT")),
+                        ZonedDateTime.of(2017, 8, 21, 14, 20, 3, 0, ZoneId.of("GMT"))
+                }
+        );
         verify(out).write("OK".getBytes());
     }
 

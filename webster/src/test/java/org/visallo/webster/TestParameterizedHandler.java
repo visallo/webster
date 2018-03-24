@@ -6,6 +6,7 @@ import org.visallo.webster.annotations.Required;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.time.ZonedDateTime;
 
 public class TestParameterizedHandler implements ParameterizedHandler {
     @Handle
@@ -22,6 +23,7 @@ public class TestParameterizedHandler implements ParameterizedHandler {
             @Optional(name = "optionalInteger") Integer optionalInteger,
             @Optional(name = "optionalIntegerWithDefault", defaultValue = "42") Integer optionalIntegerWithDefault,
             @Required(name = "requiredString") String requiredString,
+            @Required(name = "requiredDate") ZonedDateTime requiredDate,
             @Optional(name = "optionalStringWithDefault", defaultValue = "default value") String optionalStringWithDefault,
             @Required(name = "requiredStringArray[]") String[] requiredStringArray,
             @Optional(name = "optionalStringArray[]") String[] optionalStringArray,
@@ -29,6 +31,7 @@ public class TestParameterizedHandler implements ParameterizedHandler {
             @Required(name = "requiredStringInHeader") String requiredStringInHeader,
             @Required(name = "requiredBooleanArray[]") Boolean[] requiredBooleanArray,
             @Required(name = "requiredIntegerArray[]") Integer[] requiredIntegerArray,
+            @Required(name = "requiredDateArray[]") ZonedDateTime[] requiredDateArray,
             TestUser user
     ) {
         request.setAttribute("handled", "true");
@@ -39,6 +42,7 @@ public class TestParameterizedHandler implements ParameterizedHandler {
         request.setAttribute("optionalInteger", optionalInteger);
         request.setAttribute("optionalIntegerWithDefault", optionalIntegerWithDefault);
         request.setAttribute("requiredString", requiredString);
+        request.setAttribute("requiredDate", requiredDate);
         request.setAttribute("optionalStringWithDefault", optionalStringWithDefault);
         request.setAttribute("testParameterObject", testParameterObject);
         request.setAttribute("requiredStringArray", requiredStringArray);
@@ -46,6 +50,7 @@ public class TestParameterizedHandler implements ParameterizedHandler {
         request.setAttribute("requiredStringInHeader", requiredStringInHeader);
         request.setAttribute("requiredBooleanArray", requiredBooleanArray);
         request.setAttribute("requiredIntegerArray", requiredIntegerArray);
+        request.setAttribute("requiredDateArray", requiredDateArray);
         request.setAttribute("user", user);
 
         return "OK";
