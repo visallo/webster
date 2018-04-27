@@ -25,11 +25,12 @@ public class App {
         config = new HashMap<>();
     }
 
-    public void get(String path, Handler... handlers) {
+    public final void get(String path, Handler... handlers) {
         router.addRoute(Route.Method.GET, path, wrapNonRequestResponseHandlers(handlers));
     }
 
-    public void get(String path, Class<? extends Handler>... classes) {
+    @SafeVarargs
+    public final void get(String path, Class<? extends Handler>... classes) {
         try {
             Handler[] handlers = instantiateHandlers(classes);
             get(path, handlers);
@@ -38,11 +39,12 @@ public class App {
         }
     }
 
-    public void post(String path, Handler... handlers) {
+    public final void post(String path, Handler... handlers) {
         router.addRoute(Route.Method.POST, path, wrapNonRequestResponseHandlers(handlers));
     }
 
-    public void post(String path, Class<? extends Handler>... classes) {
+    @SafeVarargs
+    public final void post(String path, Class<? extends Handler>... classes) {
         try {
             Handler[] handlers = instantiateHandlers(classes);
             post(path, handlers);
@@ -51,11 +53,12 @@ public class App {
         }
     }
 
-    public void put(String path, Handler... handlers) {
+    public final void put(String path, Handler... handlers) {
         router.addRoute(Route.Method.PUT, path, wrapNonRequestResponseHandlers(handlers));
     }
 
-    public void put(String path, Class<? extends Handler>... classes) {
+    @SafeVarargs
+    public final void put(String path, Class<? extends Handler>... classes) {
         try {
             Handler[] handlers = instantiateHandlers(classes);
             put(path, handlers);
@@ -64,11 +67,12 @@ public class App {
         }
     }
 
-    public void delete(String path, Handler... handlers) {
+    public final void delete(String path, Handler... handlers) {
         router.addRoute(Route.Method.DELETE, path, wrapNonRequestResponseHandlers(handlers));
     }
 
-    public void delete(String path, Class<? extends Handler>... classes) {
+    @SafeVarargs
+    public final void delete(String path, Class<? extends Handler>... classes) {
         try {
             Handler[] handlers = instantiateHandlers(classes);
             delete(path, handlers);
@@ -77,11 +81,12 @@ public class App {
         }
     }
 
-    public void head(String path, Handler... handlers) {
+    public final void head(String path, Handler... handlers) {
         router.addRoute(Route.Method.HEAD, path, wrapNonRequestResponseHandlers(handlers));
     }
 
-    public void head(String path, Class<? extends Handler>... classes) {
+    @SafeVarargs
+    public final void head(String path, Class<? extends Handler>... classes) {
         try {
             Handler[] handlers = instantiateHandlers(classes);
             head(path, handlers);
@@ -90,11 +95,12 @@ public class App {
         }
     }
 
-    public void options(String path, Handler... handlers) {
+    public final void options(String path, Handler... handlers) {
         router.addRoute(Route.Method.OPTIONS, path, wrapNonRequestResponseHandlers(handlers));
     }
 
-    public void options(String path, Class<? extends Handler>... classes) {
+    @SafeVarargs
+    public final void options(String path, Class<? extends Handler>... classes) {
         try {
             Handler[] handlers = instantiateHandlers(classes);
             options(path, handlers);
@@ -103,11 +109,12 @@ public class App {
         }
     }
 
-    public void trace(String path, Handler... handlers) {
+    public final void trace(String path, Handler... handlers) {
         router.addRoute(Route.Method.TRACE, path, wrapNonRequestResponseHandlers(handlers));
     }
 
-    public void trace(String path, Class<? extends Handler>... classes) {
+    @SafeVarargs
+    public final void trace(String path, Class<? extends Handler>... classes) {
         try {
             Handler[] handlers = instantiateHandlers(classes);
             trace(path, handlers);
@@ -116,11 +123,12 @@ public class App {
         }
     }
 
-    public void connect(String path, Handler... handlers) {
+    public final void connect(String path, Handler... handlers) {
         router.addRoute(Route.Method.CONNECT, path, wrapNonRequestResponseHandlers(handlers));
     }
 
-    public void connect(String path, Class<? extends Handler>... classes) {
+    @SafeVarargs
+    public final void connect(String path, Class<? extends Handler>... classes) {
         try {
             Handler[] handlers = instantiateHandlers(classes);
             connect(path, handlers);
@@ -129,11 +137,12 @@ public class App {
         }
     }
 
-    public void onException(Class<? extends Exception> exceptionClass, Handler... handlers) {
+    public final void onException(Class<? extends Exception> exceptionClass, Handler... handlers) {
         router.addExceptionHandler(exceptionClass, wrapNonRequestResponseHandlers(handlers));
     }
 
-    public void onException(Class<? extends Exception> exceptionClass, Class<? extends Handler>... classes) {
+    @SafeVarargs
+    public final void onException(Class<? extends Exception> exceptionClass, Class<? extends Handler>... classes) {
         try {
             Handler[] handlers = instantiateHandlers(classes);
             onException(exceptionClass, handlers);
