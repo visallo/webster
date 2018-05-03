@@ -8,7 +8,7 @@
     </parent>
     <groupId>org.visallo</groupId>
     <artifactId>webster-parent</artifactId>
-    <version>3.1.0-SNAPSHOT</version>
+    <version>3.1.0</version>
     <packaging>pom</packaging>
 
     <name>Webster: Minimalist Web Framework: Parent</name>
@@ -29,7 +29,7 @@
         <url>scm:git:git@github.com:visallo/webster.git</url>
         <connection>scm:git:git@github.com:visallo/webster.git</connection>
         <developerConnection>scm:git:git@github.com:visallo/webster.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>webster-3.1.0</tag>
     </scm>
 
     <issueManagement>
