@@ -57,14 +57,14 @@
         <java.source.version>1.8</java.source.version>
         <java.target.version>1.8</java.target.version>
 
-        <maven.plugin.scm.version>1.8.1</maven.plugin.scm.version>
-        <maven.plugin.compiler.version>3.1</maven.plugin.compiler.version>
-        <maven.plugin.source.version>2.2.1</maven.plugin.source.version>
-        <maven.plugin.javadoc.version>2.9.1</maven.plugin.javadoc.version>
-        <maven.plugin.release.version>2.5</maven.plugin.release.version>
-        <maven.plugin.gpg.version>1.4</maven.plugin.gpg.version>
+        <maven.plugin.scm.version>1.9.5</maven.plugin.scm.version>
+        <maven.plugin.compiler.version>3.7.0</maven.plugin.compiler.version>
+        <maven.plugin.source.version>3.0.1</maven.plugin.source.version>
+        <maven.plugin.javadoc.version>3.0.0</maven.plugin.javadoc.version>
+        <maven.plugin.release.version>2.5.3</maven.plugin.release.version>
+        <maven.plugin.gpg.version>1.6</maven.plugin.gpg.version>
 
-        <socket-io.version>1.0.5</socket-io.version>
+        <socket-io.version>1.0.6</socket-io.version>
 
         <!-- provided -->
         <websocket-api.version>1.1</websocket-api.version>
@@ -74,7 +74,7 @@
         <!-- test -->
         <jetty.version>9.4.6.v20170531</jetty.version>
         <junit.version>4.12</junit.version>
-        <mockito.version>2.10.0</mockito.version>
+        <mockito.version>2.18.3</mockito.version>
     </properties>
 
     <dependencyManagement>
