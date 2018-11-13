@@ -7,8 +7,10 @@ import org.junit.runners.JUnit4;
 import org.visallo.webster.annotations.Handle;
 import org.visallo.webster.annotations.Optional;
 import org.visallo.webster.annotations.Required;
+import org.visallo.webster.utils.TestServletInputStream;
 
 import javax.servlet.ServletContext;
+import javax.servlet.ServletInputStream;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -144,6 +146,24 @@ public class AppTest {
                 }
         );
         verify(out).write("OK".getBytes());
+    }
+
+    @Test
+    public void testBodyParameter() throws Exception {
+        ServletOutputStream out = mock(ServletOutputStream.class);
+        ServletInputStream in = new TestServletInputStream("Hello World");
+
+        app.post("/test/{id}", BodyParameterHandler.class);
+
+        when(request.getParameterValues("id")).thenReturn(new String[]{"123"});
+        when(response.getOutputStream()).thenReturn(out);
+        when(request.getMethod()).thenReturn("POST");
+        when(request.getRequestURI()).thenReturn("/test/123");
+        when(request.getContextPath()).thenReturn("");
+        when(request.getInputStream()).thenReturn(in);
+        app.handle(request, response);
+        verify(request, times(2)).setAttribute("id", "123");
+        verify(request).setAttribute("body", "Hello World");
     }
 
     @Test(expected = WebsterException.class)
