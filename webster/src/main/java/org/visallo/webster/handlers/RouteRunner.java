@@ -4,13 +4,18 @@ import org.visallo.webster.*;
 import org.visallo.webster.annotations.Handle;
 import org.visallo.webster.parameterProviders.OptionalParameterProvider;
 import org.visallo.webster.parameterProviders.ParameterProvider;
+import org.visallo.webster.parameterProviders.RequestBodyValueParameterProvider;
 import org.visallo.webster.parameterProviders.RequiredParameterProvider;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
 
 public class RouteRunner implements ParameterizedHandler {
     public static final String ROUTE_RUNNER_HTML = "routeRunner.html";
@@ -33,9 +38,9 @@ public class RouteRunner implements ParameterizedHandler {
                 temp.write(data, 0, read);
             }
             String routeRunnerHtml = new String(temp.toByteArray());
-            routeRunnerHtml = routeRunnerHtml.replaceAll("\\$\\{pageTitle\\}", getPageTitle());
-            routeRunnerHtml = routeRunnerHtml.replaceAll("\\$\\{additionalStyles\\}", getAdditionalStyles());
-            routeRunnerHtml = routeRunnerHtml.replaceAll("\\$\\{additionalJavascript\\}", getAdditionalJavascript());
+            routeRunnerHtml = routeRunnerHtml.replaceAll("\\$\\{pageTitle\\}", Matcher.quoteReplacement(getPageTitle()));
+            routeRunnerHtml = routeRunnerHtml.replaceAll("\\$\\{additionalStyles\\}", Matcher.quoteReplacement(getAdditionalStyles()));
+            routeRunnerHtml = routeRunnerHtml.replaceAll("\\$\\{additionalJavascript\\}", Matcher.quoteReplacement(getAdditionalJavascript()));
             return routeRunnerHtml;
         } catch (IOException ex) {
             throw new WebsterException("Could not read " + ROUTE_RUNNER_HTML, ex);
@@ -62,8 +67,8 @@ public class RouteRunner implements ParameterizedHandler {
 
     protected String getHtml(Router router) {
         String result = routeRunnerHtml;
-        result = result.replaceAll("\\$\\{routesJson\\}", getRoutesJson(router));
-        result = result.replaceAll("\\$\\{routes\\}", getRoutesHtml(router));
+        result = result.replaceAll("\\$\\{routesJson\\}", Matcher.quoteReplacement(getRoutesJson(router)));
+        result = result.replaceAll("\\$\\{routes\\}", Matcher.quoteReplacement(getRoutesHtml(router)));
         return result;
     }
 
@@ -128,15 +133,12 @@ public class RouteRunner implements ParameterizedHandler {
                 results.add(route);
             }
         }
-        Collections.sort(results, new Comparator<Route>() {
-            @Override
-            public int compare(Route route1, Route route2) {
-                int r = route1.getPath().compareTo(route2.getPath());
-                if (r != 0) {
-                    return r;
-                }
-                return route1.getMethod().name().compareTo(route2.getMethod().name());
+        results.sort((route1, route2) -> {
+            int r = route1.getPath().compareTo(route2.getPath());
+            if (r != 0) {
+                return r;
             }
+            return route1.getMethod().name().compareTo(route2.getMethod().name());
         });
         return results;
     }
@@ -176,6 +178,9 @@ public class RouteRunner implements ParameterizedHandler {
         if (parameterProvider instanceof RequiredParameterProvider) {
             RequiredParameterProvider req = (RequiredParameterProvider) parameterProvider;
             results.add("{\"required\":true,\"name\":\"" + req.getParameterName() + "\",\"type\":\"" + req.getParameterType().getName() + "\"}");
+        } else if (parameterProvider instanceof RequestBodyValueParameterProvider) {
+            RequestBodyValueParameterProvider req = (RequestBodyValueParameterProvider) parameterProvider;
+            results.add("{\"required\":false,\"body\":true,\"type\":\"" + req.getParameterType().getName() + "\"}");
         } else if (parameterProvider instanceof OptionalParameterProvider) {
             OptionalParameterProvider opt = (OptionalParameterProvider) parameterProvider;
             String json = "{\"required\":false,\"name\":\"" + opt.getParameterName() + "\",\"type\":\"" + opt.getParameterType().getName() + "\"";

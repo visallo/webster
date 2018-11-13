@@ -86,7 +86,11 @@
     }
 
     .value {
-      width: 400px;
+      width: 800px;
+    }
+
+    .body-container {
+      margin-top: 5px;
     }
 
     .method {
@@ -146,6 +150,11 @@
       vertical-align: top;
     }
 
+    .parameter span.name {
+      vertical-align: top;
+      padding-right: 10px;
+    }
+
     .required .name {
       font-weight: bold;
     }
@@ -183,10 +192,18 @@
         parameterItemClass = 'request-url-parameter';
       }
       var parameterHtml = '';
+      var bodyParameter = null;
       route.parameters.forEach(function (parameter) {
+        if (parameter.body) {
+          bodyParameter = parameter;
+          return;
+        }
         parameterHtml += createParameterHtml(parameterItemClass, parameter.name, parameter.defaultValue, parameter.required);
       });
       parameterHtml += createParameterHtml(parameterItemClass);
+      if (bodyParameter) {
+        parameterHtml = createBodyParameterHtml(parameterItemClass, bodyParameter.required);
+      }
       document.getElementById(parameterTargetId).innerHTML = parameterHtml;
     };
 
@@ -251,7 +268,24 @@
       name = name || '';
       value = value || '';
       value = value.replace(/"/g, '&quot;');
-      return '<div class="parameter ' + className + ' ' + (required ? 'required' : '') + '"><input class="name" placeholder="Name" onkeyup="onParameterNameChange(event);" value="' + name + '"><input class="value" placeholder="Value" value="' + value + '"><img class="remove" onclick="removeItem(event); return false;" src="' + REMOVE_IMAGE_DATA + '"></img></div>';
+      return '<div class="parameter ' + className + ' ' + (required ? 'required' : '') + '">' +
+          '<input class="name" placeholder="Name" onkeyup="onParameterNameChange(event);" value="' + name + '">' +
+          '<input class="value" placeholder="Value" value="' + value + '">' +
+          '<img class="remove" onclick="removeItem(event); return false;" src="' + REMOVE_IMAGE_DATA + '"/>' +
+          '</div>';
+    };
+
+    var createBodyParameterHtml = function (className, required) {
+        return '<div class="parameter ' + className + ' ' + (required ? 'required' : '') + '">' +
+            '<div>' +
+            '<span class="name">Body Content Type</span>' +
+            '<input class="value content-type" value="application/json">' +
+            '</div>' +
+            '<div class="body-container">' +
+            '<span class="name">Body</span>' +
+            '<textarea class="value" placeholder="Body Value" rows="20"></textarea>' +
+            '</div>' +
+            '</div>';
     };
 
     var sendRequest = function () {
@@ -316,23 +350,37 @@
       headerParameters.forEach(function (headerParameter) {
         httpRequest.setRequestHeader(headerParameter.name, headerParameter.value);
       });
-      if (requestMethod != 'GET') {
-        httpRequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-      }
 
       var formParameters = getRequestParameters('request-form-datas');
-      var formParameterString = toParameterString(formParameters);
-      httpRequest.send(formParameterString.length > 0 ? formParameterString : null);
+      if (formParameters.some(function(param) {return param.body})) {
+        if (formParameters.length > 1) {
+          throw new Error('Cannot mix form parameters');
+        }
+        httpRequest.setRequestHeader('Content-Type', formParameters[0].contentType || 'application/json');
+        httpRequest.send(formParameters[0].value);
+      } else {
+        if (requestMethod !== 'GET') {
+          httpRequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        }
+        var formParameterString = toParameterString(formParameters);
+        httpRequest.send(formParameterString.length > 0 ? formParameterString : null);
+      }
     };
 
     var getRequestParameters = function (wrapperNodeId, includeBlankParameters) {
       var results = [];
       var parameterNodes = document.getElementById(wrapperNodeId).childNodes;
       for (var i = 0; i < parameterNodes.length; i++) {
-        var name = parameterNodes[i].childNodes[0].value;
-        var value = parameterNodes[i].childNodes[1].value;
-        if (name || includeBlankParameters) {
-          results.push({name: name, value: value});
+        var textArea = parameterNodes[i].getElementsByTagName("textarea");
+        if (textArea.length > 0) {
+          var contentType = parameterNodes[i].getElementsByClassName("content-type")[0].value;
+          results.push({body: true, value: textArea[0].value, contentType: contentType});
+        } else {
+          var name = parameterNodes[i].childNodes[0].value;
+          var value = parameterNodes[i].childNodes[1].value;
+          if (name || includeBlankParameters) {
+            results.push({name: name, value: value});
+          }
         }
       }
       return results;

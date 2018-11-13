@@ -24,6 +24,7 @@ public class RequestResponseHandlerParameterizedHandlerWrapper implements Reques
         registeredParameterProviderFactories.add(new HandlerChainParameterProviderFactory());
         registeredParameterProviderFactories.add(new OptionalParameterProviderFactory());
         registeredParameterProviderFactories.add(new RequiredParameterProviderFactory());
+        registeredParameterProviderFactories.add(new RequestBodyParameterProviderFactory());
         registeredParameterProviderFactories.add(new RouterParameterProviderFactory());
         registeredParameterProviderFactories.add(new ServletRequestParameterProviderFactory());
         registeredParameterProviderFactories.add(new ServletResponseParameterProviderFactory());

@@ -53,6 +53,7 @@ public class TestApp {
             app.get("/withParameters", WithParametersHandler.class);
             app.post("/withParameters", WithParametersHandler.class);
             app.delete("/withParameters", WithParametersHandler.class);
+            app.post("/withInputStreamBody/{id}", WithInputStreamBody.class);
             app.get("/long/path/name/to/test/wrapping/of/really/long/path/names/test/wrapping/of/really/long/path/names", WithParametersHandler.class);
             app.get("/json", ReturnsJsonHandler.class);
             app.get("/webster.jpg", ImageHandler.class);
