@@ -73,7 +73,7 @@
 
         <!-- test -->
         <jetty.version>9.4.13.v20181111</jetty.version>
-        <junit.version>4.12</junit.version>
+        <junit.version>4.13.1</junit.version>
         <mockito.version>2.18.3</mockito.version>
     </properties>
 
